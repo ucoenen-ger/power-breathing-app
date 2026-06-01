@@ -38,7 +38,6 @@ jobs:
 
       - name: Import signing certificate
         env:
-          CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
           CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
         run: |
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
@@ -46,8 +45,7 @@ jobs:
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          echo $CERTIFICATE_BASE64 | base64 --decode > $RUNNER_TEMP/certificate.p12
-          security import $RUNNER_TEMP/certificate.p12 -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security import ios/App/dist_cert.p12 -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
 
       - name: Install provisioning profile
@@ -55,7 +53,6 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp ios/App/dist.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/dist.mobileprovision
           echo "Profile file size: $(wc -c < ~/Library/MobileDevice/Provisioning\ Profiles/dist.mobileprovision)"
-          security cms -D -i ~/Library/MobileDevice/Provisioning\ Profiles/dist.mobileprovision 2>/dev/null | grep -E "UUID|Name|AppIDName" | head -10 || echo "WARNING: security cms failed"
 
       - name: Build & upload to TestFlight
         env:
