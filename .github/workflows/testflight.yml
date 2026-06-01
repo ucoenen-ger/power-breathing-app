@@ -57,28 +57,26 @@ jobs:
         env:
           PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE }}
         run: |
-          python3 -c "
-import base64, os, sys
-profile_b64 = os.environ['PROFILE_BASE64'].strip()
-print(f'Secret length: {len(profile_b64)} chars')
-profile_data = base64.b64decode(profile_b64)
-print(f'Decoded size: {len(profile_data)} bytes')
+          python3 - <<'PYEOF'
+import base64, os, sys, subprocess, re
+profile_b64 = os.environ.get('PROFILE_BASE64', '').strip()
+print('Secret length:', len(profile_b64), 'chars')
+try:
+    profile_data = base64.b64decode(profile_b64)
+except Exception as e:
+    print('base64 decode error:', e)
+    sys.exit(1)
+print('Decoded size:', len(profile_data), 'bytes')
 profile_dir = os.path.expanduser('~/Library/MobileDevice/Provisioning Profiles')
 os.makedirs(profile_dir, exist_ok=True)
 profile_path = os.path.join(profile_dir, 'dist.mobileprovision')
 with open(profile_path, 'wb') as f:
     f.write(profile_data)
-print(f'Written to {profile_path}')
-text = profile_data.decode('latin-1')
-uuid_idx = text.find('UUID')
-print(f'UUID present: {uuid_idx >= 0}')
-if uuid_idx < 0:
-    sys.exit(1)
-import subprocess
+print('UUID in binary:', b'UUID' in profile_data)
 result = subprocess.run(['security', 'cms', '-D', '-i', profile_path], capture_output=True)
-import re
-m = re.search(r'<key>UUID</key>.*?<string>(.*?)</string>', result.stdout.decode('utf-8','replace'), re.DOTALL)
-print(f'UUID value: {m.group(1) if m else "not found"}')"
+m = re.search(rb'<key>UUID</key>\s*<string>(.*?)</string>', result.stdout, re.DOTALL)
+print('UUID from security cms:', m.group(1).decode() if m else 'NOT FOUND')
+PYEOF
 
       - name: Build & upload to TestFlight
         env:
