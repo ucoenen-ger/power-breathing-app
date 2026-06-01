@@ -3,9 +3,6 @@ default_platform(:ios)
 platform :ios do
   desc "Build and upload to TestFlight"
   lane :beta do
-    # Versionsnummer aus git tags ableiten (optional)
-    # increment_build_number(xcodeproj: "ios/App/App.xcodeproj")
-
     build_app(
       workspace: "ios/App/App.xcworkspace",
       scheme: "App",
@@ -13,7 +10,7 @@ platform :ios do
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          "de.coenen.atemprotokoll" => "Atemprotokoll"
+          "de.coenen.atemprotokoll" => "43ac46d1-c1de-4959-ab0b-59bd896b9eb0"
         }
       },
       output_directory: "build",
