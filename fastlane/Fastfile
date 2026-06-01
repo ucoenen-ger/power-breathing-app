@@ -13,8 +13,7 @@ platform :ios do
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          # Bundle ID => Name des Provisioning Profiles (wie in Xcode)
-          # Wird automatisch aus dem installierten .mobileprovision gelesen
+          "de.coenen.atemprotokoll" => "Atemprotokoll"
         }
       },
       output_directory: "build",
