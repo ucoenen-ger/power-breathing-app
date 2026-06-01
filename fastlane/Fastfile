@@ -3,32 +3,11 @@ default_platform(:ios)
 platform :ios do
   desc "Build and upload to TestFlight"
   lane :beta do
-    # Fix OpenSSL 3.x "invalid curve name" in spaceship token.rb
-    # spaceship calls OpenSSL::PKey::EC.new which fails on OpenSSL 3.x
-    require 'openssl'
-    module ECKeyFix
-      def new(*args, &block)
-        super
-      rescue OpenSSL::PKey::PKeyError
-        OpenSSL::PKey.read(args.first)
-      end
-    end
-    OpenSSL::PKey::EC.singleton_class.prepend(ECKeyFix)
-
     key_id = ENV["APP_STORE_CONNECT_API_KEY_ID"]
     issuer_id = ENV["APP_STORE_CONNECT_API_ISSUER_ID"]
 
-    # Normalize key content: replace literal \n, add PEM headers if missing
-    key_content = ENV["APP_STORE_CONNECT_API_KEY_CONTENT"].gsub("\\n", "\n")
-    unless key_content.include?("-----BEGIN")
-      key_content = "-----BEGIN PRIVATE KEY-----\n#{key_content.strip}\n-----END PRIVATE KEY-----\n"
-    end
-
-    # Write key file
-    key_dir = File.expand_path("~/.appstoreconnect/private_keys")
-    sh("mkdir -p #{key_dir}")
-    key_path = File.join(key_dir, "AuthKey_#{key_id}.p8")
-    File.write(key_path, key_content)
+    # Key is pre-converted to SEC1 EC format by the workflow step
+    key_path = File.expand_path("~/.appstoreconnect/private_keys/AuthKey_#{key_id}.p8")
 
     api_key = app_store_connect_api_key(
       key_id: key_id,
