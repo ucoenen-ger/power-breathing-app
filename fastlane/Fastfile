@@ -9,7 +9,7 @@ platform :ios do
     module ECKeyFix
       def new(*args, &block)
         super
-      rescue OpenSSL::PKey::ECError
+      rescue OpenSSL::PKey::PKeyError
         OpenSSL::PKey.read(args.first)
       end
     end
