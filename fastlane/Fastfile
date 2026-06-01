@@ -5,7 +5,8 @@ platform :ios do
   lane :beta do
     key_id = ENV["APP_STORE_CONNECT_API_KEY_ID"]
     issuer_id = ENV["APP_STORE_CONNECT_API_ISSUER_ID"]
-    key_content = ENV["APP_STORE_CONNECT_API_KEY_CONTENT"]
+    # Fix literal \n in GitHub secret
+    key_content = ENV["APP_STORE_CONNECT_API_KEY_CONTENT"].gsub("\\n", "\n")
 
     # Write API key file so xcodebuild can use it for automatic signing
     key_dir = File.expand_path("~/.appstoreconnect/private_keys")
