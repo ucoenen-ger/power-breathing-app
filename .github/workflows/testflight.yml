@@ -49,7 +49,13 @@ jobs:
       - name: Install provisioning profile
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp ios/App/dist.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/dist.mobileprovision
+          PROFILE_PATH=${{ github.workspace }}/ios/App/dist.mobileprovision
+          echo "Profile file size: $(wc -c < $PROFILE_PATH)"
+          # Extract UUID from profile and install with UUID filename (required by Xcode)
+          UUID=$(security cms -D -i $PROFILE_PATH 2>/dev/null | plutil -extract UUID raw - 2>/dev/null || echo "43ac46d1-c1de-4959-ab0b-59bd896b9eb0")
+          echo "Profile UUID: $UUID"
+          cp $PROFILE_PATH ~/Library/MobileDevice/Provisioning\ Profiles/${UUID}.mobileprovision
+          echo "Installed as: ${UUID}.mobileprovision"
 
       - name: Build & upload to TestFlight
         env:
