@@ -1,0 +1,19 @@
+{
+  "name": "power-breathing-protokoll",
+  "version": "1.0.0",
+  "description": "Power Breathing Protokoll App",
+  "scripts": {
+    "sync": "cap sync",
+    "ios": "cap open ios",
+    "android": "cap open android",
+    "build": "echo 'Keine Build-Pipeline nötig - HTML-App'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^8.3.4",
+    "@capacitor/ios": "^8.3.4"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.3.4"
+  }
+}

@@ -1,0 +1,20 @@
+node_modules/
+.DS_Store
+build/
+*.ipa
+*.dSYM.zip
+
+# CocoaPods — inkludieren damit CI ohne 'pod install' auskommt
+# Wenn du pods/ NICHT committen willst, kommentiere diese Zeile ein:
+# ios/App/Pods/
+
+# Xcode
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/DerivedData/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/

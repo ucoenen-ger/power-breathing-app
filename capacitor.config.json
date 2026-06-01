@@ -1,0 +1,11 @@
+{
+  "appId": "de.coenen.atemprotokoll",
+  "appName": "Power Breathing Protokoll",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "ios": {
+    "contentInset": "never"
+  }
+}

@@ -1,0 +1,8 @@
+# Ersetze mit deiner Apple ID
+apple_id("ucoenen@gmail.com")
+
+# Bundle ID deiner App — prüfe in Xcode unter Signing & Capabilities
+app_identifier("de.coenen.atemprotokoll")  # z.B. "de.ucoenen.powerbreathing"
+
+# Team ID — findest du unter developer.apple.com → Account → Membership
+team_id("355427K34R")            # z.B. "ABC123DEF4"
