@@ -5,20 +5,27 @@ platform :ios do
   lane :beta do
     key_id = ENV["APP_STORE_CONNECT_API_KEY_ID"]
     issuer_id = ENV["APP_STORE_CONNECT_API_ISSUER_ID"]
-    # Fix literal \n in GitHub secret, write key to file
+
+    # Normalize key content: replace literal \n, add PEM headers if missing
     key_content = ENV["APP_STORE_CONNECT_API_KEY_CONTENT"].gsub("\\n", "\n")
+    unless key_content.include?("-----BEGIN")
+      key_content = "-----BEGIN PRIVATE KEY-----\n#{key_content.strip}\n-----END PRIVATE KEY-----\n"
+    end
+
+    # Write key file
     key_dir = File.expand_path("~/.appstoreconnect/private_keys")
     sh("mkdir -p #{key_dir}")
     key_path = File.join(key_dir, "AuthKey_#{key_id}.p8")
     File.write(key_path, key_content)
 
-    # Use key_filepath to avoid OpenSSL curve name issue on newer macOS runners
+    # Use key_filepath (avoids inline OpenSSL parse; jwt >= 2.7.1 in Gemfile fixes curve name)
     api_key = app_store_connect_api_key(
       key_id: key_id,
       issuer_id: issuer_id,
       key_filepath: key_path
     )
 
+    # Switch to automatic signing so Xcode fetches the right profile
     update_code_signing_settings(
       use_automatic_signing: true,
       path: "ios/App/App.xcodeproj",
