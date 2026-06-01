@@ -1,3 +1,13 @@
+# Fix for OpenSSL 3.x ECError "invalid curve name"
+module ECKeyFix
+  def new(*args)
+    super
+  rescue OpenSSL::PKey::ECError
+    OpenSSL::PKey.read(args.first)
+  end
+end
+OpenSSL::PKey::EC.singleton_class.prepend(ECKeyFix)
+
 default_platform(:ios)
 
 platform :ios do
@@ -28,18 +38,12 @@ platform :ios do
       configuration: "Release",
       export_method: "app-store",
       xcargs: "-allowProvisioningUpdates -authenticationKeyPath #{key_path} -authenticationKeyID #{key_id} -authenticationKeyIssuerID #{issuer_id}",
-      output_directory: "build",
-      output_name: "PowerBreathing.ipa",
-      clean: true,
-      silent: false
+      output_directory: "build"
     )
 
     upload_to_testflight(
       api_key: api_key,
-      app_identifier: "de.coenen.atemprotokoll",
-      ipa: "build/PowerBreathing.ipa",
-      skip_waiting_for_build_processing: true,
-      changelog: ENV["RELEASE_NOTES"] || "Neue Version"
+      skip_waiting_for_build_processing: true
     )
   end
 end
