@@ -1,3 +1,13 @@
+# Monkey-patch for OpenSSL 3.x EC key compatibility
+module ECKeyFix
+  def new(*args)
+    super
+  rescue OpenSSL::PKey::ECError
+    OpenSSL::PKey.read(args.first)
+  end
+end
+OpenSSL::PKey::EC.singleton_class.prepend(ECKeyFix)
+
 default_platform(:ios)
 
 platform :ios do
