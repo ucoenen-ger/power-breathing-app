@@ -1,39 +1,3 @@
-module ECKeyFix
-  def new(*args)
-    super
-  rescue OpenSSL::PKey::ECError, OpenSSL::PKey::PKeyError => orig_err
-    str = args.first
-    unless str.is_a?(String)
-      raise orig_err
-    end
-    # Short string without PEM headers = likely a curve name (e.g. "prime256v1")
-    # EC.new("curve") was removed in OpenSSL 3.x; use PKey.generate_key to avoid
-    # re-entering this patch (EC.generate internally calls EC.new)
-    if str.length < 100 && !str.include?("-----")
-      begin
-        return OpenSSL::PKey::EC.generate(str)
-      rescue
-        raise orig_err
-      end
-    end
-
-    pem = str.gsub('\\n', "\n").strip
-    begin
-      OpenSSL::PKey.read(pem)
-    rescue OpenSSL::PKey::PKeyError, OpenSSL::PKey::ECError
-      body = pem.gsub(/-----[^-]+-----/, '').gsub(/[^A-Za-z0-9+\/=]/, '')
-      raise orig_err if body.length < 50
-      pkcs8_pem = "-----BEGIN PRIVATE KEY-----\n#{body.scan(/.{1,64}/).join("\n")}\n-----END PRIVATE KEY-----\n"
-      begin
-        OpenSSL::PKey.read(pkcs8_pem)
-      rescue
-        raise orig_err
-      end
-    end
-  end
-end
-OpenSSL::PKey::EC.singleton_class.prepend(ECKeyFix)
-
 default_platform(:ios)
 
 platform :ios do
@@ -42,11 +6,22 @@ platform :ios do
     key_id = ENV["APP_STORE_CONNECT_API_KEY_ID"]
     issuer_id = ENV["APP_STORE_CONNECT_API_ISSUER_ID"]
 
-    key_content = ENV["APP_STORE_CONNECT_API_KEY_CONTENT"].to_s.gsub('\\n', "\n")
-    key_path = File.expand_path("~/.appstoreconnect/private_keys/AuthKey_#{key_id}.p8")
-    require 'fileutils'
-    FileUtils.mkdir_p(File.dirname(key_path))
-    File.write(key_path, key_content)
+    # Normalize key content
+    raw = ENV["APP_STORE_CONNECT_API_KEY_CONTENT"].dup
+    raw.gsub!("\\n", "\n")
+    raw.strip!
+    unless raw.start_with?("-----")
+      raw = "-----BEGIN PRIVATE KEY-----\n" + raw + "\n-----END PRIVATE KEY-----"
+    end
+
+    key_dir = File.expand_path("~/.appstoreconnect/private_keys")
+    sh("mkdir -p #{key_dir}")
+    key_path = File.join(key_dir, "AuthKey_#{key_id}.p8")
+    File.write(key_path, raw + "\n")
+
+    # Re-encode with openssl CLI to canonical PKCS8 (fixes OpenSSL 3.x curve name issue)
+    tmp = key_path + ".tmp"
+    sh("openssl pkey -in #{key_path} -out #{tmp} && mv #{tmp} #{key_path}")
 
     api_key = app_store_connect_api_key(
       key_id: key_id,
@@ -66,12 +41,18 @@ platform :ios do
       configuration: "Release",
       export_method: "app-store",
       xcargs: "-allowProvisioningUpdates -authenticationKeyPath #{key_path} -authenticationKeyID #{key_id} -authenticationKeyIssuerID #{issuer_id}",
-      output_directory: "build"
+      output_directory: "build",
+      output_name: "PowerBreathing.ipa",
+      clean: true,
+      silent: false
     )
 
     upload_to_testflight(
       api_key: api_key,
-      skip_waiting_for_build_processing: true
+      app_identifier: "de.coenen.atemprotokoll",
+      ipa: "build/PowerBreathing.ipa",
+      skip_waiting_for_build_processing: true,
+      changelog: ENV["RELEASE_NOTES"] || "Neue Version"
     )
   end
 end
