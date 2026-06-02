@@ -53,8 +53,7 @@ jobs:
           mkdir -p "$KEY_DIR"
           KEY_FILE="$KEY_DIR/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
           printf '%s' "$APP_STORE_CONNECT_API_KEY_CONTENT" | sed 's/\\n/\n/g' > /tmp/raw_key.p8
-          openssl ec -in /tmp/raw_key.p8 -out "$KEY_FILE" 2>/dev/null || \
-            openssl pkey -in /tmp/raw_key.p8 -out "$KEY_FILE" 2>/dev/null || \
+          openssl pkey -in /tmp/raw_key.p8 -out "$KEY_FILE" 2>/dev/null || \
             cp /tmp/raw_key.p8 "$KEY_FILE"
           rm -f /tmp/raw_key.p8
       - name: Build & upload to TestFlight
