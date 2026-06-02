@@ -18,12 +18,20 @@ platform :ios do
       key_filepath: key_path
     )
 
+    auth_xcargs = "-allowProvisioningUpdates -authenticationKeyPath #{key_path} -authenticationKeyID #{key_id} -authenticationKeyIssuerID #{issuer_id}"
+
     build_app(
       workspace: "ios/App/App.xcworkspace",
       scheme: "App",
       configuration: "Release",
       export_method: "app-store",
-      xcargs: "-allowProvisioningUpdates -authenticationKeyPath #{key_path} -authenticationKeyID #{key_id} -authenticationKeyIssuerID #{issuer_id}",
+      xcargs: auth_xcargs,
+      export_xcargs: auth_xcargs,
+      export_options: {
+        method: "app-store",
+        signingStyle: "automatic",
+        teamID: "355427K34R"
+      },
       output_directory: "build",
       output_name: "PowerBreathing.ipa",
       clean: true,
