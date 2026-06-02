@@ -1,15 +1,25 @@
 module ECKeyFix
   def new(*args)
     super
-  rescue OpenSSL::PKey::ECError, OpenSSL::PKey::PKeyError
+  rescue OpenSSL::PKey::ECError, OpenSSL::PKey::PKeyError => orig_err
+    # Only attempt key parsing if args[0] looks like PEM key data
+    str = args.first
+    unless str.is_a?(String) && (str.include?('-----') || str.length > 100)
+      raise orig_err
+    end
+
+    pem = str.gsub('\\n', "\n").strip
     begin
-      OpenSSL::PKey.read(args[0])
+      OpenSSL::PKey.read(pem)
     rescue OpenSSL::PKey::PKeyError, OpenSSL::PKey::ECError
-      # Normalize: strip headers and all non-base64 chars, re-wrap in fresh PKCS8
-      raw = args[0].to_s.gsub('\\n', "\n")
-      body = raw.gsub(/-----[^-]+-----/, '').gsub(/[^A-Za-z0-9+\/=]/, '')
+      body = pem.gsub(/-----[^-]+-----/, '').gsub(/[^A-Za-z0-9+\/=]/, '')
+      raise orig_err if body.length < 50
       pkcs8_pem = "-----BEGIN PRIVATE KEY-----\n#{body.scan(/.{1,64}/).join("\n")}\n-----END PRIVATE KEY-----\n"
-      OpenSSL::PKey.read(pkcs8_pem)
+      begin
+        OpenSSL::PKey.read(pkcs8_pem)
+      rescue
+        raise orig_err
+      end
     end
   end
 end
@@ -23,7 +33,6 @@ platform :ios do
     key_id = ENV["APP_STORE_CONNECT_API_KEY_ID"]
     issuer_id = ENV["APP_STORE_CONNECT_API_ISSUER_ID"]
 
-    # Normalize key content from ENV (handles literal \n from GitHub secrets)
     key_content = ENV["APP_STORE_CONNECT_API_KEY_CONTENT"].to_s.gsub('\\n', "\n")
     key_path = File.expand_path("~/.appstoreconnect/private_keys/AuthKey_#{key_id}.p8")
     require 'fileutils'
