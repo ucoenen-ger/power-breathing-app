@@ -37,6 +37,10 @@ platform :ios do
       xcodeproj: "ios/App/App.xcodeproj"
     )
 
+    increment_version_number(
+      version_number: "1.1.0"
+    )
+
         build_app(
       workspace: "ios/App/App.xcworkspace",
       scheme: "App",
