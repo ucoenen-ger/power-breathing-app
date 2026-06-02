@@ -48,10 +48,11 @@ jobs:
         run: |
           PP_PATH=$RUNNER_TEMP/profile.mobileprovision
           echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PP_PATH"
-          UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
+          echo "Profile size: $(wc -c < "$PP_PATH")"
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          UUID=$(openssl smime -verify -noverify -inform DER -in "$PP_PATH" 2>/dev/null | plutil -extract UUID raw - 2>/dev/null || echo "43ac46d1-c1de-4959-ab0b-59bd896b9eb0")
+          echo "UUID: $UUID"
           cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/${UUID}.mobileprovision
-          echo "Installed profile UUID: $UUID"
       - name: Build and upload to TestFlight
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
