@@ -7,10 +7,11 @@ module ECKeyFix
       raise orig_err
     end
     # Short string without PEM headers = likely a curve name (e.g. "prime256v1")
-    # EC.new("curve") was removed in OpenSSL 3.x; use EC.generate instead
-    if str.length <= 100 && !str.include?('-----')
+    # EC.new("curve") was removed in OpenSSL 3.x; use PKey.generate_key to avoid
+    # re-entering this patch (EC.generate internally calls EC.new)
+    if str.length < 100 && !str.include?("-----")
       begin
-        return OpenSSL::PKey::EC.generate(str)
+        return OpenSSL::PKey.generate_key("EC", "EC_paramgen_curve:#{str}")
       rescue
         raise orig_err
       end
