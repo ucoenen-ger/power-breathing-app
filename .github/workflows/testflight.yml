@@ -43,6 +43,7 @@ jobs:
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
           RELEASE_NOTES: ${{ github.event.inputs.release_notes }}
+          BUILD_NUMBER: ${{github.run_number}}
         run: bundle exec fastlane beta
       - name: Cleanup keychain
         if: always()
