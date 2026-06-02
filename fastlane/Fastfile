@@ -18,20 +18,25 @@ platform :ios do
       key_filepath: key_path
     )
 
-    auth_xcargs = "-allowProvisioningUpdates -authenticationKeyPath #{key_path} -authenticationKeyID #{key_id} -authenticationKeyIssuerID #{issuer_id}"
+    get_provisioning_profile(
+      api_key: api_key,
+      app_identifier: "de.coenen.atemprotokoll",
+      readonly: false
+    )
+
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "ios/App/App.xcodeproj",
+      team_id: "355427K34R",
+      code_sign_identity: "iPhone Distribution",
+      profile_name: ENV["SIGH_NAME"]
+    )
 
     build_app(
       workspace: "ios/App/App.xcworkspace",
       scheme: "App",
       configuration: "Release",
       export_method: "app-store",
-      xcargs: auth_xcargs,
-      export_xcargs: auth_xcargs,
-      export_options: {
-        method: "app-store",
-        signingStyle: "automatic",
-        teamID: "355427K34R"
-      },
       output_directory: "build",
       output_name: "PowerBreathing.ipa",
       clean: true,
