@@ -28,41 +28,10 @@ jobs:
       - name: Install CocoaPods
         working-directory: ios/App
         run: pod install --repo-update
-      - name: Import signing certificate
-        env:
-          SIGNING_CERT_P12_BASE64: ${{ secrets.SIGNING_CERT_P12 }}
-          SIGNING_CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
-        run: |
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          KEYCHAIN_PASSWORD=$(openssl rand -base64 12)
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          echo "$SIGNING_CERT_P12_BASE64" | base64 --decode > /tmp/cert.p12
-          security import /tmp/cert.p12 -P "$SIGNING_CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
-          security list-keychain -d user -s "$KEYCHAIN_PATH"
-          rm /tmp/cert.p12
-      - name: Install provisioning profile
-        env:
-          PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE }}
-        run: |
-          PP_PATH=$RUNNER_TEMP/profile.mobileprovision
-          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PP_PATH"
-          echo "Profile size: $(wc -c < "$PP_PATH")"
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          UUID=$(openssl smime -verify -noverify -inform DER -in "$PP_PATH" 2>/dev/null | plutil -extract UUID raw - 2>/dev/null) || UUID="43ac46d1-c1de-4959-ab0b-59bd896b9eb0"
-          echo "UUID: $UUID"
-          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/${UUID}.mobileprovision
       - name: Build and upload to TestFlight
         env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
-          RELEASE_NOTES: ${{ github.event.inputs.release_notes }}
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          RELEASE_NOTES: ${{ github.event.inputs.release_notes }}
         run: bundle exec fastlane beta
-      - name: Cleanup keychain
-        if: always()
-        run: |
-          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
