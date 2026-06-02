@@ -11,7 +11,7 @@ module ECKeyFix
     # re-entering this patch (EC.generate internally calls EC.new)
     if str.length < 100 && !str.include?("-----")
       begin
-        return OpenSSL::PKey.generate_key("EC", "EC_paramgen_curve:#{str}")
+        return OpenSSL::PKey::EC.generate(str)
       rescue
         raise orig_err
       end
