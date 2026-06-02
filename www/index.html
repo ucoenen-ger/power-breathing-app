@@ -15,7 +15,7 @@
 <script>
 (function(){
   var t=localStorage.getItem('pbTheme')||'system';
-  var dark=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme:dark)').matches);
+  var sysDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;var dark=t==='dark'||(t!=='light'&&sysDark);
   document.documentElement.setAttribute('data-theme',dark?'dark':'light');
 })();
 </script>
@@ -274,10 +274,12 @@ select.styled{background:rgba(15,40,60,.7);border:1px solid rgba(139,175,142,.2)
 <script>
 // ═══ CONFIG ═══
 var C=Object.assign(
+loadC();
   {rounds:3,breathCount:30,speed:'mittel',mus1:0,mus2:0,retTimes:[60,90,120,150,180],freeRet:false,musVol:0.85,musRandom:false,voiceURI:'',voiceOn:true,voiceRate:0.88},
   JSON.parse(localStorage.getItem('pbSettings')||'{}')
 );
 function saveC(){localStorage.setItem('pbSettings',JSON.stringify(C));}
+function loadC(){try{var s=localStorage.getItem('pbC');if(s){var o=JSON.parse(s);for(var k in o){if(Object.prototype.hasOwnProperty.call(o,k))C[k]=o[k];}}}catch(e){}}
 var SPD={
   langsam:{inhale:2000,exhale:3000,label:'Langsam',bpm:'12/min'},
   mittel:{inhale:1500,exhale:2250,label:'Mittel',bpm:'16/min'},
@@ -663,6 +665,7 @@ function startSes(){
   if(_wFadeTO){clearTimeout(_wFadeTO);_wFadeTO=null;}
   try{var _ma=_getMEl();if(_ma&&!_ma.paused){_ma.pause();}var g=_getGain(),c=_getWAC();g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(0,c.currentTime);}catch(e){}
   if(speechSynthesis)speechSynthesis.cancel();
+  if(_wFadeTO){clearTimeout(_wFadeTO);_wFadeTO=null;}try{var _el2=document.getElementById("musicAudio");if(_el2){_el2.pause();_el2.currentTime=0;}}catch(_e){}try{if(_wgain&&_wac){_wgain.gain.cancelScheduledValues(_wac.currentTime);_wgain.gain.setValueAtTime(0,_wac.currentTime);}}catch(_e){}
   _ab=false;stopPrev();
   resetCircle();
   S={round:0,phase:'idle',retResults:[],retEl:0};
