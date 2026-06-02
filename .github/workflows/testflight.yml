@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      # NEUER SCHRITT: Zwingt den Runner, Xcode 26 (oder neuer) zu nutzen
+      - name: Select latest Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
