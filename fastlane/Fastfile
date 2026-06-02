@@ -1,8 +1,15 @@
 module ECKeyFix
   def new(*args)
     super
-  rescue OpenSSL::PKey::ECError
-    OpenSSL::PKey.read(args[0])
+  rescue OpenSSL::PKey::ECError, OpenSSL::PKey::PKeyError
+    begin
+      OpenSSL::PKey.read(args[0])
+    rescue OpenSSL::PKey::PKeyError, OpenSSL::PKey::ECError
+      # Try PKCS8 header if raw content
+      pem = args[0].to_s
+      pem = "-----BEGIN PRIVATE KEY-----\n#{pem.gsub(/\s+/, '').scan(/.{1,64}/).join("\n")}\n-----END PRIVATE KEY-----\n" unless pem.include?('-----')
+      OpenSSL::PKey.read(pem)
+    end
   end
 end
 OpenSSL::PKey::EC.singleton_class.prepend(ECKeyFix)
