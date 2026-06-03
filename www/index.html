@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Atemprotokoll">
 <link rel="apple-touch-icon" id="appTouchIcon">
 <link rel="icon" type="image/svg+xml" id="appFavicon">
-<link href="<https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Nunito+Sans:wght@300;400;600&display=swap>" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 <script>
 (function(){
   var t=localStorage.getItem('pbTheme')||'system';
@@ -174,11 +174,14 @@ input[type=range]{width:100%;accent-color:var(--accent);height:4px}
 .theme-seg{display:flex;gap:2px;background:var(--tabs-bg);border:1px solid var(--glass-border);border-radius:10px;padding:2px}
 .theme-seg button{flex:1;padding:7px 10px;font-size:12px;font-weight:600;background:transparent;border:none;border-radius:8px;color:var(--text3);cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.3px}
 .theme-seg button.on{background:var(--tab-active-bg);color:var(--accent-text);box-shadow:var(--tab-active-sh)}
-.mus-sel{flex:1;background:var(--sel-bg);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--glass-border);color:var(--text);padding:10px 32px 10px 12px;border-radius:12px;font-family:'Nunito Sans',sans-serif;font-size:13px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='<http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%235E9062' stroke-width='2' stroke-linecap='round' stroke-linejoin='round>' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
-[data-theme="dark"] .mus-sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='<http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23A8C9AB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round>' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");}
+/* Music select */
+.mus-sel{flex:1;background:var(--sel-bg);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--glass-border);color:var(--text);padding:10px 32px 10px 12px;border-radius:12px;font-family:'Nunito Sans',sans-serif;font-size:13px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%235E9062' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+[data-theme="dark"] .mus-sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23A8C9AB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");}
 .mus-sel option{background:var(--bg);color:var(--text);}
+/* Textarea */
 textarea{background:transparent;border:none;outline:none;color:var(--text);font-family:'Nunito Sans',sans-serif;font-size:14px;line-height:1.6;resize:none;width:100%;}
 textarea::placeholder{color:var(--text3);}
+/* Journal entry card hover */
 .jrn-entry{cursor:pointer;transition:opacity .15s}
 .jrn-entry:active{opacity:.75}
 @keyframes breatheIco{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
@@ -196,7 +199,7 @@ textarea::placeholder{color:var(--text3);}
 <div class="screen active" id="scrWel">
   <div class="container" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:max(24px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom));overflow-y:auto">
     <div style="margin-bottom:20px;animation:fadeIn 1s">
-      <svg viewBox="0 0 300 84" xmlns="<http://www.w3.org/2000/svg>" width="260" height="73" style="display:block;margin:0 auto">
+      <svg viewBox="0 0 300 84" xmlns="http://www.w3.org/2000/svg" width="260" height="73" style="display:block;margin:0 auto">
         <circle cx="20" cy="6"  r="3.5"  style="fill:var(--accent)" opacity="0.38"/>
         <circle cx="20" cy="18" r="5"    style="fill:var(--accent)" opacity="0.56"/>
         <circle cx="20" cy="33" r="7"    style="fill:var(--accent)" opacity="0.76"/>
@@ -219,6 +222,7 @@ textarea::placeholder{color:var(--text3);}
     </div>
     <h1 class="serif" style="font-size:34px;font-weight:300;color:var(--text);letter-spacing:2px;animation:fadeIn 1s">Power Breathing</h1>
     <div class="serif" style="font-size:13px;font-weight:300;color:var(--text3);letter-spacing:5px;text-transform:uppercase;margin-top:8px;animation:fadeIn 1s .2s both">Atemprotokoll</div>
+    <!-- 3 Buttons -->
     <button class="btn btn-p" style="margin-top:36px;animation:fadeIn 1s .4s both;padding:16px 44px;font-size:16px;letter-spacing:1px;width:100%;max-width:300px" onclick="Tone.start();startSes()">Starten</button>
     <div style="display:flex;gap:12px;margin-top:12px;animation:fadeIn 1s .5s both;width:100%;max-width:300px">
       <button class="btn" style="flex:1;padding:13px 8px;font-size:14px" onclick="go('set')">Konfigurieren</button>
@@ -242,6 +246,8 @@ textarea::placeholder{color:var(--text3);}
       <button class="tab" onclick="stab(2,this)">Musik</button>
       <button class="tab" onclick="stab(3,this)">Sonstiges</button>
     </div>
+
+    <!-- Tab 0: Grundlagen -->
     <div id="tc0">
       <div class="crd"><div class="lbl">Anzahl Durchgänge</div><div id="rndB" style="display:flex;gap:8px"></div></div>
       <div class="crd"><div class="lbl">Atemzüge pro Durchgang</div><div id="brB" style="display:flex;flex-wrap:wrap;gap:8px"></div></div>
@@ -261,6 +267,8 @@ textarea::placeholder{color:var(--text3);}
         </div>
       </div>
     </div>
+
+    <!-- Tab 1: Haltezeiten -->
     <div id="tc1" style="display:none">
       <div class="crd">
         <div class="lbl">Haltezeit Phase 2 — pro Durchgang</div>
@@ -272,6 +280,8 @@ textarea::placeholder{color:var(--text3);}
         <div id="retS" style="margin-top:8px"></div>
       </div>
     </div>
+
+    <!-- Tab 2: Musik -->
     <div id="tc2" style="display:none">
       <div class="crd">
         <div class="lbl">Musiklautstärke</div>
@@ -307,10 +317,14 @@ textarea::placeholder{color:var(--text3);}
         <div id="trackList"></div>
       </div>
     </div>
+
+    <!-- Tab 3: Sonstiges -->
     <div id="tc3" style="display:none">
       <div class="crd">
         <div class="lbl">Erscheinungsbild</div>
-        <div class="set-row" style="padding-top:0"><span>Darstellungsmodus</span></div>
+        <div class="set-row" style="padding-top:0">
+          <span>Darstellungsmodus</span>
+        </div>
         <div class="theme-seg" id="themeSeg">
           <button onclick="setThemePref('light',this)">☀️ Hell</button>
           <button onclick="setThemePref('system',this)" class="on">Automatisch</button>
@@ -407,6 +421,8 @@ textarea::placeholder{color:var(--text3);}
 
 <!-- ═══ JOURNAL ═══ -->
 <div class="screen" id="scrJrn" style="justify-content:flex-start;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh">
+
+  <!-- Eintrag-Editor -->
   <div id="jrnEditorView" style="display:none;flex:1;flex-direction:column;width:100%">
     <div style="flex:1;overflow-y:auto;padding-top:max(24px,env(safe-area-inset-top));padding-bottom:16px">
       <div class="container" style="padding-top:0">
@@ -430,6 +446,8 @@ textarea::placeholder{color:var(--text3);}
       <button class="btn btn-p" style="flex:1;max-width:200px;padding:14px" onclick="saveJrnEntry()">Speichern</button>
     </div>
   </div>
+
+  <!-- Eintrags-Liste -->
   <div id="jrnListView" style="display:none;flex:1;overflow-y:auto;width:100%">
     <div class="container" style="padding-top:max(24px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom))">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
@@ -440,9 +458,10 @@ textarea::placeholder{color:var(--text3);}
       <div id="jrnEntries"></div>
     </div>
   </div>
+
 </div>
 
-<script src="<https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 <script>
 // ═══ THEME ═══
 function setThemePref(pref,el){
@@ -485,7 +504,7 @@ var TRK=[
   {id:-5,n:"Celtic Calm",d:"Vorinstalliert",type:'preinstalled',builtin:true,src:'./musik/celtic.mp3'},
 ];
 var _trackId=1;
-function getTrk(id){return TRK.find(function(t){return <t.id>===id;})||TRK[0];}
+function getTrk(id){return TRK.find(function(t){return t.id===id;})||TRK[0];}
 function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.round(b/1024)+' KB';}
 
 // ═══ IndexedDB (v2 — tracks + journal) ═══
@@ -501,7 +520,7 @@ function openDB(cb){
   req.onsuccess=function(e){_db=e.target.result;cb(_db);};
   req.onerror=function(){cb(null);};
 }
-function dbSave(track,buf){openDB(function(db){if(!db)return;db.transaction('tracks','readwrite').objectStore('tracks').put({id:<track.id>,n:track.n,d:track.d,data:buf});});}
+function dbSave(track,buf){openDB(function(db){if(!db)return;db.transaction('tracks','readwrite').objectStore('tracks').put({id:track.id,n:track.n,d:track.d,data:buf});});}
 function dbDelete(id){openDB(function(db){if(!db)return;db.transaction('tracks','readwrite').objectStore('tracks').delete(id);});}
 function dbLoadAll(cb){openDB(function(db){if(!db){cb([]);return;}var req=db.transaction('tracks','readonly').objectStore('tracks').getAll();req.onsuccess=function(e){cb(e.target.result||[]);};req.onerror=function(){cb([]);};});}
 function _addTrackFromBuf(id,name,size,buf){
@@ -512,7 +531,7 @@ function _addTrackFromBuf(id,name,size,buf){
 function handleUpload(files){
   for(var i=0;i<files.length;i++){var f=files[i];if(!f.type.match(/audio/i)&&!f.name.match(/\.mp3$/i))continue;(function(file){var reader=new FileReader();reader.onload=function(e){var buf=e.target.result;var name=file.name.replace(/\.mp3$/i,'').replace(/[-_]/g,' ');name=name.charAt(0).toUpperCase()+name.slice(1);var sz=fmtSize(file.size);var id=_trackId++;_addTrackFromBuf(id,name,sz,buf);dbSave({id:id,n:name,d:sz},buf);rMu();rTrackList();};reader.readAsArrayBuffer(file);})(f);}
 }
-function removeTrack(id){var idx=TRK.findIndex(function(t){return <t.id>===id;});if(idx<=0)return;if(C.mus1===id)C.mus1=0;if(C.mus2===id)C.mus2=0;try{URL.revokeObjectURL(TRK[idx].mp3);}catch(e){}dbDelete(id);TRK.splice(idx,1);rMu();rTrackList();}
+function removeTrack(id){var idx=TRK.findIndex(function(t){return t.id===id;});if(idx<=0)return;if(C.mus1===id)C.mus1=0;if(C.mus2===id)C.mus2=0;try{URL.revokeObjectURL(TRK[idx].mp3);}catch(e){}dbDelete(id);TRK.splice(idx,1);rMu();rTrackList();}
 function rTrackList(){
   var c=document.getElementById('trackList');if(!c)return;c.innerHTML='';
   var tracks=TRK.filter(function(t){return t.type==='mp3';});
@@ -520,7 +539,7 @@ function rTrackList(){
   tracks.forEach(function(t){
     var d=document.createElement('div');
     d.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--sep)';
-    var delBtn='<button class="btn btn-sm" onclick="removeTrack('+<t.id>+')" style="padding:5px 10px;font-size:12px;color:rgba(220,80,60,.8);border-color:rgba(220,80,60,.2);flex-shrink:0">✕</button>';
+    var delBtn='<button class="btn btn-sm" onclick="removeTrack('+t.id+')" style="padding:5px 10px;font-size:12px;color:rgba(220,80,60,.8);border-color:rgba(220,80,60,.2);flex-shrink:0">✕</button>';
     d.innerHTML='<div style="font-size:18px">🎵</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text)">'+t.n+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px">'+t.d+'</div></div>'+delBtn;
     c.appendChild(d);
   });
@@ -561,12 +580,14 @@ document.addEventListener('visibilitychange',function(){
 });
 
 // ═══ AUDIO ENGINE ═══
+// Verwende Tone.js AudioContext — wird durch Tone.start() (User Gesture) entsperrt
 var _wac=null,_wgain=null,_wmSrc=null,_wFadeTO=null;
 function _getMEl(){return document.getElementById('musicAudio');}
 function _getWAC(){
+  // Immer Tone.js Context verwenden — er wird durch Tone.start() entsperrt (iOS-kompatibel)
   try{
     var toneCtx=Tone.getContext().rawContext;
-    if(_wac!==toneCtx){_wac=toneCtx;_wgain=null;}
+    if(_wac!==toneCtx){_wac=toneCtx;_wgain=null;} // Context geändert: Gain zurücksetzen
   }catch(e){
     if(!_wac)_wac=new(window.AudioContext||window.webkitAudioContext)();
   }
@@ -580,7 +601,7 @@ function _getGain(){
 }
 function _ensureMediaSrc(){
   var el=_getMEl();if(!el)return;
-  if(_wmSrc)return;
+  if(_wmSrc)return; // MediaElementSource kann nur einmal erstellt werden
   try{var c=_getWAC(),g=_getGain();_wmSrc=c.createMediaElementSource(el);_wmSrc.connect(g);}catch(e){}
 }
 function setMVol(v){C.musVol=v;try{var c=_getWAC(),g=_getGain(),el=_getMEl();if(el&&!el.paused){g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(v,c.currentTime+0.15);}}catch(e){}}
@@ -613,7 +634,7 @@ function playM(trk){
   }
 }
 var _randHistory=[];
-function pickRandTrk(){var pool=TRK.filter(function(t){return t.type==='mp3'||t.type==='preinstalled';});if(!pool.length)return getTrk(0);var unplayed=pool.filter(function(t){return _randHistory.indexOf(<t.id>)<0;});if(!unplayed.length){_randHistory=[];unplayed=pool.slice();}var pick=unplayed[Math.floor(Math.random()*unplayed.length)];_randHistory.push(<pick.id>);return pick;}
+function pickRandTrk(){var pool=TRK.filter(function(t){return t.type==='mp3'||t.type==='preinstalled';});if(!pool.length)return getTrk(0);var unplayed=pool.filter(function(t){return _randHistory.indexOf(t.id)<0;});if(!unplayed.length){_randHistory=[];unplayed=pool.slice();}var pick=unplayed[Math.floor(Math.random()*unplayed.length)];_randHistory.push(pick.id);return pick;}
 function fadeTransM(nextTrk){stopM();setTimeout(function(){if(!_ab)playM(nextTrk);},2000);}
 
 function ac(){
@@ -691,16 +712,19 @@ function rRet(){
     c.appendChild(d);d.querySelector('input').oninput=function(){C.retTimes[i]=+this.value;document.getElementById('rl'+i).textContent=ft(+this.value);saveC();};
   })(i);
 }
+
+// Musik-Dropdowns
 function rML(selId,key){
   var sel=document.getElementById(selId);if(!sel)return;
   var curVal=C[key];sel.innerHTML='';
   TRK.forEach(function(t){
     var opt=document.createElement('option');
-    opt.value=<t.id>;
+    opt.value=t.id;
     opt.textContent=t.n;
-    if(curVal===<t.id>)opt.selected=true;
+    if(curVal===t.id)opt.selected=true;
     sel.appendChild(opt);
   });
+  // Sync C[key] in case value changed
   C[key]=+sel.value;
 }
 function rMu(){
@@ -751,9 +775,10 @@ function cCol(phase){
 function startSes(){
   function _doStart(){
     try{Tone.getContext().rawContext.resume();}catch(e){}
+    // Reset audio state to avoid glitches on restart
     if(_wFadeTO){clearTimeout(_wFadeTO);_wFadeTO=null;}
-    try{var _el2=document.getElementById("musicAudio");if(_el2){_el2.pause();_el2.currentTime=0;}}catch(_e){}
-    try{if(_wgain&&_wac){_wgain.gain.cancelScheduledValues(_wac.currentTime);_wgain.gain.setValueAtTime(0,_wac.currentTime);}}catch(_e){}
+    try{var _el=_getMEl();if(_el){_el.pause();_el.currentTime=0;}}catch(e){}
+    try{if(_wgain&&_wac){_wgain.gain.cancelScheduledValues(_wac.currentTime);_wgain.gain.setValueAtTime(0,_wac.currentTime);}}catch(e){}
     _ab=false;stopM();stopPrev();S={round:0,phase:'idle',retResults:[],retEl:0};
     window._startSilentAudio();requestWakeLock();setupMediaSession();go('ses');rDots();
     sTO(function(){startRnd(0);},800);
@@ -763,6 +788,7 @@ function startSes(){
 function abortSes(){
   _ab=true;cTO();stopM();
   if(speechSynthesis)speechSynthesis.cancel();
+  // Reset circle to neutral before showing summary
   try{var ci=document.getElementById('sCirc'),gl=document.getElementById('sGlow');if(ci){ci.classList.remove('inhale','exhale');}if(gl){gl.classList.remove('inhale','exhale');}setCircle('breathing');}catch(e){}
   showCmp(true);
 }
@@ -926,7 +952,7 @@ function fetchCity(cb){
   try{
     navigator.geolocation.getCurrentPosition(
       function(pos){
-        fetch('<https://nominatim.openstreetmap.org/reverse?format=json&lat='+pos.coords.latitude+'&lon='+pos.coords.longitude>,
+        fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat='+pos.coords.latitude+'&lon='+pos.coords.longitude,
           {headers:{'Accept-Language':'de'}})
           .then(function(r){return r.json();})
           .then(function(d){var a=d.address||{};cb(a.city||a.town||a.village||a.county||null);})
@@ -989,11 +1015,13 @@ function saveJrnEntry(){
   });
 }
 
-function cancelJrnEntry(){_jrnCurrent=null;_jrnIsNew=false;showJrnList();}
+function cancelJrnEntry(){
+  _jrnCurrent=null;_jrnIsNew=false;showJrnList();
+}
 
 function deleteJrnEntry(){
   if(!_jrnCurrent)return;
-  var id=_<jrnCurrent.id>;
+  var id=_jrnCurrent.id;
   if(!confirm('Eintrag löschen?'))return;
   openDB(function(db){
     if(!db)return;
@@ -1014,7 +1042,7 @@ function loadJrnEntries(){
     if(!db){renderJrnList([]);return;}
     var req=db.transaction('journal','readonly').objectStore('journal').getAll();
     req.onsuccess=function(e){
-      var entries=(e.target.result||[]).sort(function(a,b){return <b.id-a.id>;});
+      var entries=(e.target.result||[]).sort(function(a,b){return b.id-a.id;});
       renderJrnList(entries);
     };
     req.onerror=function(){renderJrnList([]);};
@@ -1030,7 +1058,7 @@ function renderJrnList(entries){
   c.innerHTML=entries.map(function(e){
     var runden=e.completedRounds+'/'+e.totalRounds+(e.partial?' ✕':'');
     var notesSnippet=e.notes?'<div style="font-size:12px;color:var(--text2);margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+e.notes+'</div>':'';
-    return '<div class="crd jrn-entry" onclick="openJrnEntry('+<e.id>+')">'+
+    return '<div class="crd jrn-entry" onclick="openJrnEntry('+e.id+')">'+
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">'+
       '<div style="flex:1;min-width:0">'+
       '<div style="font-size:14px;font-weight:600;color:var(--text)">'+e.date+'</div>'+
@@ -1048,18 +1076,23 @@ function openJrnEntry(id){
     if(!db)return;
     var req=db.transaction('journal','readonly').objectStore('journal').get(id);
     req.onsuccess=function(e){
-      if(e.target.result){_jrnCurrent=e.target.result;_jrnIsNew=false;showJrnEditor();}
+      if(e.target.result){
+        _jrnCurrent=e.target.result;
+        _jrnIsNew=false;
+        showJrnEditor();
+      }
     };
   });
 }
 
 // ═══ GESPEICHERTE TRACKS LADEN ═══
-dbLoadAll(function(saved){if(!saved||!saved.length)return;saved.forEach(function(s){_addTrackFromBuf(<s.id>,s.n,s.d,s.data);});rMu();rTrackList();});
+dbLoadAll(function(saved){if(!saved||!saved.length)return;saved.forEach(function(s){_addTrackFromBuf(s.id,s.n,s.d,s.data);});rMu();rTrackList();});
 
 // ═══ PWA SETUP ═══
 function pwaSetup(){
   var dark=isDark();
-  var svgLogo='<svg xmlns="<http://www.w3.org/2000/svg>" viewBox="0 0 512 512">'+
+  // Logo C: vertikale Dots — App-Icon
+  var svgLogo='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">'+
     '<defs><radialGradient id="bg" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="'+(dark?'#1A3D1E':'#5E9062')+'"/><stop offset="100%" stop-color="'+(dark?'#0A1A0C':'#3A6B3E')+'"/></radialGradient></defs>'+
     '<rect width="512" height="512" rx="90" fill="url(#bg)"/>'+
     '<circle cx="256" cy="108" r="18"  fill="white" opacity="0.40"/>'+
