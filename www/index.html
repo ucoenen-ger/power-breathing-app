@@ -573,6 +573,7 @@ var _retStartTime=0,_recovStartTime=0;
 document.addEventListener('visibilitychange',function(){
   if(document.hidden)return;
   Tone.start().catch(function(){});
+  _pregenRevs();
   try{var ctx=Tone.getContext().rawContext;if(ctx.state==='suspended')ctx.resume();}catch(e){}
   try{window._startSilentAudio();}catch(e){}
   if(!_ab&&S.phase==='retention'&&_retStartTime&&_iv){var el=Math.floor((Date.now()-_retStartTime)/1000);S.retEl=el;document.getElementById('sTmr').textContent=ft(el);}
@@ -582,6 +583,7 @@ document.addEventListener('visibilitychange',function(){
 // ═══ AUDIO ENGINE ═══
 // Verwende Tone.js AudioContext — wird durch Tone.start() (User Gesture) entsperrt
 var _wac=null,_wgain=null,_wmSrc=null,_wFadeTO=null;
+var _revGong=null,_revChime=null;
 function _getMEl(){return document.getElementById('musicAudio');}
 function _getWAC(){
   // Immer Tone.js Context verwenden — er wird durch Tone.start() entsperrt (iOS-kompatibel)
@@ -601,8 +603,19 @@ function _getGain(){
 }
 function _ensureMediaSrc(){
   var el=_getMEl();if(!el)return;
-  if(_wmSrc)return; // MediaElementSource kann nur einmal erstellt werden
-  try{var c=_getWAC(),g=_getGain();_wmSrc=c.createMediaElementSource(el);_wmSrc.connect(g);}catch(e){}
+  if(!_wmSrc){
+    try{var c=_getWAC(),g=_getGain();_wmSrc=c.createMediaElementSource(el);_wmSrc.connect(g);}catch(e){}
+  }else{
+    try{_wmSrc.disconnect();_wmSrc.connect(_getGain());}catch(e){}
+  }
+}
+async function _pregenRevs(){
+  if(_revGong&&_revChime)return;
+  try{
+    _revGong=new Tone.Reverb({decay:10,wet:0.78,preDelay:0.03}).toDestination();
+    _revChime=new Tone.Reverb({decay:6,wet:0.72}).toDestination();
+    await Promise.all([_revGong.generate(),_revChime.generate()]);
+  }catch(e){console.warn('_pregenRevs failed',e);}
 }
 function setMVol(v){C.musVol=v;try{var c=_getWAC(),g=_getGain(),el=_getMEl();if(el&&!el.paused){g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(v,c.currentTime+0.15);}}catch(e){}}
 function stopM(){
@@ -657,8 +670,28 @@ async function playBreath(inh,ms){
     src.buffer=buf;src.connect(bp);bp.connect(g);g.connect(c.destination);src.start(now);src.stop(now+dur);
   }catch(e){}
 }
-async function playChimeS(){await Tone.start();var rev=new Tone.Reverb({decay:6,wet:0.72}).toDestination();await rev.generate();var chime=new Tone.PolySynth(Tone.FMSynth,{harmonicity:6.2,modulationIndex:2.8,oscillator:{type:'sine'},modulation:{type:'sine'},envelope:{attack:0.004,decay:0.45,sustain:0.05,release:5.5},modulationEnvelope:{attack:0.004,decay:0.18,sustain:0,release:3.5},volume:-7}).connect(rev);var now=Tone.now();[[523.25,0],[659.26,0.22],[783.99,0.44],[1046.5,0.68],[1318.5,0.9]].forEach(function(p){chime.triggerAttackRelease(p[0],'1n',now+p[1]);});setTimeout(function(){try{chime.dispose();rev.dispose();}catch(e){}},9000);}
-async function playGong(){await Tone.start();var rev=new Tone.Reverb({decay:10,wet:0.78,preDelay:0.03}).toDestination();await rev.generate();var ch=new Tone.Chorus(0.4,10,0.65).start().connect(rev);var gong=new Tone.PolySynth(Tone.FMSynth,{harmonicity:1.015,modulationIndex:1.6,oscillator:{type:'sine'},modulation:{type:'sine'},envelope:{attack:0.008,decay:0.8,sustain:0.65,release:10},modulationEnvelope:{attack:0.008,decay:0.4,sustain:0.25,release:8},volume:-5}).connect(ch);var rootHz=174.61,now=Tone.now();gong.triggerAttackRelease([rootHz,rootHz*2.015,rootHz*3.03],'4n',now);setTimeout(function(){try{gong.triggerAttackRelease([rootHz,rootHz*2.015],'4n',Tone.now()+0.05);}catch(e){}},700);setTimeout(function(){try{gong.dispose();ch.dispose();rev.dispose();}catch(e){}},16000);}
+
+async function playChimeS(){
+  await Tone.start();
+  var rev=_revChime||new Tone.Reverb({decay:6,wet:0.72}).toDestination();
+  if(rev!==_revChime){await rev.generate();}
+  var chime=new Tone.PolySynth(Tone.FMSynth,{harmonicity:6.2,modulationIndex:2.8,oscillator:{type:'sine'},modulation:{type:'sine'},envelope:{attack:0.004,decay:0.45,sustain:0.05,release:5.5},modulationEnvelope:{attack:0.004,decay:0.18,sustain:0,release:3.5},volume:-7}).connect(rev);
+  var now=Tone.now();
+  [[523.25,0],[659.26,0.22],[783.99,0.44],[1046.5,0.68],[1318.5,0.9]].forEach(function(p){chime.triggerAttackRelease(p[0],'1n',now+p[1]);});
+  setTimeout(function(){try{chime.dispose();if(rev!==_revChime)rev.dispose();}catch(e){}},9000);
+}
+
+async function playGong(){
+  await Tone.start();
+  var rev=_revGong||new Tone.Reverb({decay:10,wet:0.78,preDelay:0.03}).toDestination();
+  if(rev!==_revGong){await rev.generate();}
+  var ch=new Tone.Chorus(0.4,10,0.65).start().connect(rev);
+  var gong=new Tone.PolySynth(Tone.FMSynth,{harmonicity:1.015,modulationIndex:1.6,oscillator:{type:'sine'},modulation:{type:'sine'},envelope:{attack:0.008,decay:0.8,sustain:0.65,release:10},modulationEnvelope:{attack:0.008,decay:0.4,sustain:0.25,release:8},volume:-5}).connect(ch);
+  var rootHz=174.61,now=Tone.now();
+  gong.triggerAttackRelease([rootHz,rootHz*2.015,rootHz*3.03],'4n',now);
+  setTimeout(function(){try{gong.triggerAttackRelease([rootHz,rootHz*2.015],'4n',Tone.now()+0.05);}catch(e){}},700);
+  setTimeout(function(){try{gong.dispose();ch.dispose();if(rev!==_revGong)rev.dispose();}catch(e){}},16000);
+}
 
 // ═══ SPEECH ═══
 var _bto=null;
@@ -775,6 +808,7 @@ function cCol(phase){
 function startSes(){
   function _doStart(){
     try{Tone.getContext().rawContext.resume();}catch(e){}
+    _pregenRevs();
     // Reset audio state to avoid glitches on restart
     if(_wFadeTO){clearTimeout(_wFadeTO);_wFadeTO=null;}
     try{var _el=_getMEl();if(_el){_el.pause();_el.currentTime=0;}}catch(e){}
