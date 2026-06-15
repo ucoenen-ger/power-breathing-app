@@ -760,9 +760,11 @@ async function playGong(){
 
 // ═══ SPEECH ═══
 var _bto=null;
+var _sayAudio={'Beginne jetzt mit der Atmung':'audio/start.mp3','Noch 10 Atemzüge':'audio/ten_more.mp3','Atme tief aus und halte den Atem':'audio/exhale_hold.mp3','Atme tief ein und halte den Atem':'audio/inhale_hold.mp3','Atme aus und entspanne Dich':'audio/relax.mp3'};
 function say(txt,cb){
   var b=document.getElementById('banner');b.textContent=txt;b.classList.add('vis');clearTimeout(_bto);_bto=setTimeout(function(){b.classList.remove('vis');},3500);
-  if(C.voiceOn===false||!window.speechSynthesis){if(cb)setTimeout(cb,1500);return;}
+  var _af=_sayAudio[txt];if(_af&&C.voiceOn!==false){var _au=new Audio(_af);_au.volume=1;_au.onended=function(){if(cb)setTimeout(cb,50);};_au.onerror=function(){if(C.voiceOn===false||!window.speechSynthesis){if(cb)setTimeout(cb,1500);return;}if(window.speechSynthesis&&C.voiceOn!==false){var _u=new SpeechSynthesisUtterance(txt);_u.lang='de-DE';_u.rate=C.voiceRate||0.88;_u.onend=function(){if(cb)cb();};speechSynthesis.speak(_u);}else if(cb){cb();};};_au.play().catch(function(){if(window.speechSynthesis&&C.voiceOn!==false){var _u=new SpeechSynthesisUtterance(txt);_u.lang='de-DE';_u.rate=C.voiceRate||0.88;_u.onend=function(){if(cb)cb();};speechSynthesis.speak(_u);}else if(cb){cb();};});return;}
+if(C.voiceOn===false||!window.speechSynthesis){if(cb)setTimeout(cb,1500);return;}
   speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(txt);u.lang='de-DE';u.rate=typeof C.voiceRate==='number'?C.voiceRate:0.88;u.pitch=0.95;u.volume=1;
   var voices=speechSynthesis.getVoices(),voice=null;
   if(C.voiceURI){voice=voices.find(function(v){return v.voiceURI===C.voiceURI;})||null;}
