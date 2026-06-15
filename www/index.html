@@ -598,20 +598,21 @@ function setupMediaSession(title){
 }
 var _retStartTime=0,_recovStartTime=0;
 window.addEventListener('pageshow',function(){Tone.start().catch(function(){});});
-document.addEventListener('visibilitychange',async function(){
+document.addEventListener('visibilitychange',function(){
   if(document.hidden)return;
-  try{await Tone.start();}catch(e){}
-  try{
-    if(Tone.context&&Tone.context.rawContext&&Tone.context.rawContext.state!=='running'){
-      await Tone.context.rawContext.resume();
-    }
-  }catch(e){}
-  try{
-    if(navigator.wakeLock&&document.visibilityState==='visible'){
-      await navigator.wakeLock.request('screen');
-    }
-  }catch(e){}
-}););
+  Tone.start().catch(function(){});
+  _pregenRevs();
+  try{var ctx=Tone.getContext().rawContext;if(ctx.state==='suspended')ctx.resume();}catch(e){}
+  try{window._startSilentAudio();}catch(e){}
+  if(!_ab&&S.phase==='retention'&&_retStartTime&&_iv){var el=Math.floor((Date.now()-_retStartTime)/1000);S.retEl=el;document.getElementById('sTmr').textContent=ft(el);}
+  if(!_ab&&S.phase==='recovery'&&_recovStartTime&&_iv){document.getElementById('sTmr').textContent=ft(Math.floor((Date.now()-_recovStartTime)/1000));}
+});
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden)return;
+  if(navigator.wakeLock&&document.visibilityState==='visible'){
+    navigator.wakeLock.request('screen').catch(function(){});
+  }
+});
 
 // ═══ AUDIO ENGINE ═══
 // Verwende Tone.js AudioContext — wird durch Tone.start() (User Gesture) entsperrt
@@ -645,9 +646,9 @@ function _ensureMediaSrc(){
 async function _pregenRevs(){
   if(_revGong&&_revChime)return;
   try{
-    _revGong=new Tone.Freeverb({roomSize:0.75, dampening:3000}).toDestination();
-    _revChime=new Tone.Freeverb({roomSize:0.65, dampening:4000}).toDestination();
-    // reverbs ready (Freeverb - no generate needed)
+    _revGong=new Tone.Freeverb({decay:10,wet:0.78,preDelay:0.03}).toDestination();
+    _revChime=new Tone.Freeverb({decay:6,wet:0.72}).toDestination();
+    
   }catch(e){console.warn('_pregenRevs failed',e);}
 }
 function setMVol(v){C.musVol=v;try{var c=_getWAC(),g=_getGain(),el=_getMEl();if(el&&!el.paused){g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(v,c.currentTime+0.15);}}catch(e){}}
@@ -706,7 +707,7 @@ async function playBreath(inh,ms){
 
 async function playChimeS(){
   await Tone.start();
-  var rev=_revChime||new Tone.Freeverb({roomSize:0.65, dampening:4000}).toDestination();
+  var rev=_revChime||new Tone.Freeverb({decay:6,wet:0.72}).toDestination();
   var chime=new Tone.PolySynth(Tone.FMSynth,{harmonicity:6.2,modulationIndex:2.8,oscillator:{type:'sine'},modulation:{type:'sine'},envelope:{attack:0.004,decay:0.45,sustain:0.05,release:5.5},modulationEnvelope:{attack:0.004,decay:0.18,sustain:0,release:3.5},volume:-7}).connect(rev);
   var now=Tone.now();
   [[523.25,0],[659.26,0.22],[783.99,0.44],[1046.5,0.68],[1318.5,0.9]].forEach(function(p){chime.triggerAttackRelease(p[0],'1n',now+p[1]);});
@@ -715,7 +716,7 @@ async function playChimeS(){
 
 async function playGong(){
   await Tone.start();
-  var rev=_revGong||new Tone.Freeverb({roomSize:0.75, dampening:3000}).toDestination();
+  var rev=_revGong||new Tone.Freeverb({decay:10,wet:0.78,preDelay:0.03}).toDestination();
   var ch=new Tone.Chorus(0.4,10,0.65).start().connect(rev);
   var gong=new Tone.PolySynth(Tone.FMSynth,{harmonicity:1.015,modulationIndex:1.6,oscillator:{type:'sine'},modulation:{type:'sine'},envelope:{attack:0.008,decay:0.8,sustain:0.65,release:10},modulationEnvelope:{attack:0.008,decay:0.4,sustain:0.25,release:8},volume:-5}).connect(ch);
   var rootHz=174.61,now=Tone.now();
@@ -854,7 +855,7 @@ function abortSes(){
   _ab=true;cTO();stopM();
   if(speechSynthesis)speechSynthesis.cancel();
   // Reset circle to neutral before showing summary
-  try{var ci=document.getElementById('sCirc'),gl=document.getElementById('sGlow');if(ci){ci.style.transition='none';ci.style.animation='none';void ci.offsetWidth;ci.classList.remove('inhale','exhale');ci.style.removeProperty('transform');ci.style.removeProperty('opacity');}if(gl){gl.style.transition='none';gl.style.animation='none';void gl.offsetWidth;gl.classList.remove('inhale','exhale');}setCircle('breathing');}catch(e){}
+  try{var ci=document.getElementById('sCirc'),gl=document.getElementById('sGlow');if(ci){ci.classList.remove('inhale','exhale');}if(gl){gl.classList.remove('inhale','exhale');}setCircle('breathing');}catch(e){}
   showCmp(true);
 }
 function rDots(){
@@ -1113,11 +1114,7 @@ function exportJournalPDF(){
       var entries=ev.target.result||[];
       if(!entries.length){win.close();alert('Keine Einträge im Journal.');return;}
       var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>Atemprotokoll</title>';
-      html+='<style>body{font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px}';
-      html+='h1{color:#2d6a4f;border-bottom:2px solid #2d6a4f;padding-bottom:8px}';
-      html+='.entry{border:1px solid #ddd;border-radius:8px;padding:12px;margin:12px 0}';
-      html+='.date{font-weight:bold;color:#555}';
-      html+='@media print{button{display:none}}</style></head><body>';
+      html+='<style>body{font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px}h1{color:#2d6a4f;border-bottom:2px solid #2d6a4f;padding-bottom:8px}.entry{border:1px solid #ddd;border-radius:8px;padding:12px;margin:12px 0}.date{font-weight:bold;color:#555}@media print{button{display:none}}</style></head><body>';
       html+='<h1>Atemprotokoll Journal</h1>';
       html+='<button onclick="window.print()" style="margin-bottom:16px;padding:8px 16px;background:#2d6a4f;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer">Drucken / Als PDF speichern</button>';
       entries.sort(function(a,b){return (b.id||0)-(a.id||0);}).forEach(function(en){
@@ -1133,6 +1130,18 @@ function exportJournalPDF(){
       win.document.close();
     };
   };
+}
+function deleteJrnEntry(){
+  if(!_jrnCurrent)return;
+  showConfirm('Eintrag löschen?','Diese Aktion kann nicht rückgängig gemacht werden.','Löschen',function(){
+    var id=_jrnCurrent.id;
+    openDB(function(db){
+      if(!db)return;
+      var tx=db.transaction('journal','readwrite');
+      tx.objectStore('journal').delete(id);
+      tx.oncomplete=function(){_jrnCurrent=null;_jrnIsNew=false;showJrnList();};
+    });
+  });
 }
 
 function showJrnList(){
