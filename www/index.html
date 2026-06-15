@@ -598,15 +598,20 @@ function setupMediaSession(title){
 }
 var _retStartTime=0,_recovStartTime=0;
 window.addEventListener('pageshow',function(){Tone.start().catch(function(){});});
-document.addEventListener('visibilitychange',function(){
+document.addEventListener('visibilitychange',async function(){
   if(document.hidden)return;
-  Tone.start().catch(function(){});
-  _pregenRevs();
-  try{var ctx=Tone.getContext().rawContext;if(ctx.state==='suspended')ctx.resume();}catch(e){}
-  try{window._startSilentAudio();}catch(e){}
-  if(!_ab&&S.phase==='retention'&&_retStartTime&&_iv){var el=Math.floor((Date.now()-_retStartTime)/1000);S.retEl=el;document.getElementById('sTmr').textContent=ft(el);}
-  if(!_ab&&S.phase==='recovery'&&_recovStartTime&&_iv){document.getElementById('sTmr').textContent=ft(Math.floor((Date.now()-_recovStartTime)/1000));}
-});
+  try{await Tone.start();}catch(e){}
+  try{
+    if(Tone.context&&Tone.context.rawContext&&Tone.context.rawContext.state!=='running'){
+      await Tone.context.rawContext.resume();
+    }
+  }catch(e){}
+  try{
+    if(navigator.wakeLock&&document.visibilityState==='visible'){
+      await navigator.wakeLock.request('screen');
+    }
+  }catch(e){}
+}););
 
 // âââ AUDIO ENGINE âââ
 // Verwende Tone.js AudioContext â wird durch Tone.start() (User Gesture) entsperrt
@@ -1096,6 +1101,8 @@ function confirmCancel(){
   _confirmCb=null;
 }
 function exportJournalPDF(){
+  var win=window.open('','_blank');
+  if(!win){alert('Bitte Popups erlauben.');return;}
   var req=indexedDB.open('wimhof_musik',1);
   req.onsuccess=function(e){
     var db=e.target.result;
@@ -1104,7 +1111,7 @@ function exportJournalPDF(){
     var getAllReq=store.getAll();
     getAllReq.onsuccess=function(ev){
       var entries=ev.target.result||[];
-      if(!entries.length){alert('Keine Einträge im Journal.');return;}
+      if(!entries.length){win.close();alert('Keine Einträge im Journal.');return;}
       var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>Atemprotokoll</title>';
       html+='<style>body{font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px}';
       html+='h1{color:#2d6a4f;border-bottom:2px solid #2d6a4f;padding-bottom:8px}';
@@ -1122,9 +1129,8 @@ function exportJournalPDF(){
         html+='</div>';
       });
       html+='</body></html>';
-      var blob=new Blob([html],{type:'text/html'});
-      var url=URL.createObjectURL(blob);
-      window.open(url,'_blank');
+      win.document.write(html);
+      win.document.close();
     };
   };
 }
