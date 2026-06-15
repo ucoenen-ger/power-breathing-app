@@ -250,7 +250,7 @@ textarea::placeholder{color:var(--text3);}
     <h1 class="serif" style="font-size:34px;font-weight:300;color:var(--text);letter-spacing:2px;animation:fadeIn 1s">Power Breathing</h1>
     <div class="serif" style="font-size:13px;font-weight:300;color:var(--text3);letter-spacing:5px;text-transform:uppercase;margin-top:8px;animation:fadeIn 1s .2s both">Atemprotokoll</div>
     <!-- 3 Buttons -->
-    <button class="btn btn-p" style="margin-top:36px;animation:fadeIn 1s .4s both;padding:16px 44px;font-size:16px;letter-spacing:1px;width:100%;max-width:300px" onclick="Tone.start();startSes()">Starten</button>
+    <button class="btn btn-p" style="margin-top:36px;animation:fadeIn 1s .4s both;padding:16px 44px;font-size:16px;letter-spacing:1px;width:100%;max-width:300px" onclick="Tone.start().then(function(){startSes();},function(){startSes();})">Starten</button>
     <div style="display:flex;gap:12px;margin-top:12px;animation:fadeIn 1s .5s both;width:100%;max-width:300px">
       <button class="btn" style="flex:1;padding:13px 8px;font-size:14px" onclick="go('set')">Konfigurieren</button>
       <button class="btn" style="flex:1;padding:13px 8px;font-size:14px" onclick="go('jrn')">Journal</button>
@@ -601,6 +601,7 @@ window.addEventListener('pageshow',function(){Tone.start().catch(function(){});}
 document.addEventListener('visibilitychange',function(){
   if(document.hidden)return;
   Tone.start().catch(function(){});
+  try{if(typeof _revGong!=='undefined'&&_revGong){_revGong.dispose();_revGong=null;}if(typeof _revChime!=='undefined'&&_revChime){_revChime.dispose();_revChime=null;}}catch(e){}
   _pregenRevs();
   try{var ctx=Tone.getContext().rawContext;if(ctx.state==='suspended')ctx.resume();}catch(e){}
   try{window._startSilentAudio();}catch(e){}
@@ -1102,32 +1103,38 @@ function confirmCancel(){
   _confirmCb=null;
 }
 function exportJournalPDF(){
-  var win=window.open('','_blank');
-  if(!win){alert('Bitte Popups erlauben.');return;}
   var req=indexedDB.open('wimhof_musik',1);
   req.onsuccess=function(e){
     var db=e.target.result;
     var tx=db.transaction('journal','readonly');
     var store=tx.objectStore('journal');
-    var getAllReq=store.getAll();
-    getAllReq.onsuccess=function(ev){
+    var allReq=store.getAll();
+    allReq.onsuccess=function(ev){
       var entries=ev.target.result||[];
-      if(!entries.length){win.close();alert('Keine Einträge im Journal.');return;}
-      var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>Atemprotokoll</title>';
-      html+='<style>body{font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px}h1{color:#2d6a4f;border-bottom:2px solid #2d6a4f;padding-bottom:8px}.entry{border:1px solid #ddd;border-radius:8px;padding:12px;margin:12px 0}.date{font-weight:bold;color:#555}@media print{button{display:none}}</style></head><body>';
-      html+='<h1>Atemprotokoll Journal</h1>';
-      html+='<button onclick="window.print()" style="margin-bottom:16px;padding:8px 16px;background:#2d6a4f;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer">Drucken / Als PDF speichern</button>';
+      if(!entries.length){alert('Keine Einträge im Journal.');return;}
+      var overlay=document.createElement('div');
+      overlay.id='_journalOverlay';
+      overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;overflow-y:auto;padding:20px;box-sizing:border-box;-webkit-overflow-scrolling:touch';
+      var html='<div style="max-width:600px;margin:0 auto">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">';
+      html+='<h1 style="color:#2d6a4f;margin:0;font-size:1.3em">Atemprotokoll Journal</h1>';
+      html+='<button id="_jClose" style="padding:8px 16px;background:#888;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer">✕ Schließen</button>';
+      html+='</div>';
       entries.sort(function(a,b){return (b.id||0)-(a.id||0);}).forEach(function(en){
-        html+='<div class="entry">';
-        if(en.date||en.ts||en.time) html+='<div class="date">'+(en.date||en.ts||en.time||'')+'</div>';
+        html+='<div style="border:1px solid #ddd;border-radius:8px;padding:12px;margin:12px 0">';
+        if(en.date||en.ts||en.time) html+='<div style="font-weight:bold;color:#555">'+(en.date||en.ts||en.time||'')+'</div>';
         if(en.rounds!=null) html+='<div>Runden: '+en.rounds+'</div>';
         if(en.dur||en.duration) html+='<div>Dauer: '+(en.dur||en.duration)+'</div>';
         if(en.note) html+='<div style="margin-top:8px;color:#333">'+en.note+'</div>';
         html+='</div>';
       });
-      html+='</body></html>';
-      win.document.write(html);
-      win.document.close();
+      html+='</div>';
+      overlay.innerHTML=html;
+      document.body.appendChild(overlay);
+      document.getElementById('_jClose').onclick=function(){
+        var el=document.getElementById('_journalOverlay');
+        if(el)el.remove();
+      };
     };
   };
 }
