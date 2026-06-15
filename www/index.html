@@ -204,6 +204,14 @@ textarea::placeholder{color:var(--text3);}
 @keyframes breatheIco{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes floatBubble{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.03)}}
+.s-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.12);transition:background .3s;}
+.s-dot.done{background:var(--accent);}
+.s-dot.today{background:#52b788;box-shadow:0 0 7px rgba(82,183,136,.5);}
+#mixStrip{position:fixed;bottom:0;left:0;right:0;padding:10px 20px 30px;background:rgba(8,20,12,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:none;z-index:20;}
+.mix-lbl{font-size:10px;letter-spacing:.08em;color:var(--text3);}
+.mix-val{font-size:10px;color:var(--text3);}
+#mixSlider{width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:rgba(255,255,255,.18);outline:none;cursor:pointer;}
+#mixSlider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:#52b788;cursor:pointer;box-shadow:0 0 8px rgba(82,183,136,.4);}
 </style>
 </head>
 <body>
@@ -256,6 +264,15 @@ textarea::placeholder{color:var(--text3);}
       <button class="btn" style="flex:1;padding:13px 8px;font-size:14px" onclick="go('jrn')">Journal</button>
     </div>
     <div class="warn" style="animation:fadeIn 1s .6s both">⚠️ Sicherheitshinweis: Praktiziere diese Atemtechnik nie im Wasser, beim Autofahren oder Stehen. Setze oder lege dich bequem hin. Bei Schwindel sofort aufhören.</div>
+    <div id="streakBar" style="margin:10px 0 0;background:rgba(255,255,255,.05);border-radius:10px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:7px;">
+        <span style="font-size:17px;line-height:1">🔥</span>
+        <div><div style="display:flex;align-items:baseline;gap:3px"><span id="streakCount" style="font-size:19px;font-weight:500;color:var(--text1)">0</span><span style="font-size:11px;color:var(--text3)">Tage</span></div></div>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center;">
+        <div class="s-dot"></div><div class="s-dot"></div><div class="s-dot"></div><div class="s-dot"></div><div class="s-dot"></div><div class="s-dot"></div><div class="s-dot"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -424,6 +441,17 @@ textarea::placeholder{color:var(--text3);}
     <div id="sCnt" style="margin-top:16px;font-size:12px;color:var(--text3)"></div>
     <div id="sRTgt" style="margin-top:10px;font-size:17px;font-weight:500;color:var(--text2);display:none"></div>
   </div>
+<div id="mixStrip">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+    <span class="mix-lbl">MIX</span>
+    <span class="mix-val" id="mixVal">100/100</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:15px;opacity:.4">🫁</span>
+    <input type="range" id="mixSlider" min="0" max="100" value="50" step="1" oninput="_applyMix(parseInt(this.value))">
+    <span style="font-size:15px;opacity:.4">🎵</span>
+  </div>
+</div>
 </div>
 
 <!-- ═══ COMPLETE ═══ -->
@@ -512,6 +540,7 @@ document.addEventListener('DOMContentLoaded',function(){initThemeSeg();});
 
 // ═══ CONFIG ═══
 var C={rounds:3,breathCount:30,bpm:16,ascending:false,mus1:0,mus2:0,retTimes:[60,90,120,150,180],freeRet:false,musVol:0.55,musRandom:false,voiceURI:'',voiceOn:true,voiceRate:0.88};
+var _mixBal=parseInt(localStorage.getItem('_mixBal')||'50');
 function saveC(){try{localStorage.setItem('pbC',JSON.stringify(C));}catch(e){}}
 function loadC(){try{var s=localStorage.getItem('pbC');if(s){var o=JSON.parse(s);for(var k in o){if(Object.prototype.hasOwnProperty.call(o,k))C[k]=o[k];}}}catch(e){}}
 loadC();
@@ -617,6 +646,11 @@ document.addEventListener('visibilitychange',function(){
 // Verwende Tone.js AudioContext — wird durch Tone.start() (User Gesture) entsperrt
 var _wac=null,_wgain=null,_wmSrc=null,_wFadeTO=null;
 var _revGong=null,_revChime=null;
+function _haptic(type){try{if(window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.Haptics){var H=Capacitor.Plugins.Haptics;if(type==='medium')H.impact({style:'MEDIUM'});else if(type==='heavy')H.impact({style:'HEAVY'});else H.impact({style:'LIGHT'});}else if(navigator.vibrate){navigator.vibrate(type==='light'?10:type==='medium'?25:50);}}catch(e){}}
+function _applyMix(val){_mixBal=val;try{localStorage.setItem('_mixBal',''+val);}catch(e){}var mFactor=val>=50?1:val/50;var bFactor=val<=50?1:(100-val)/50;try{var c=_getWAC(),g=_getGain(),el=_getMEl();if(el&&!el.paused){g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(C.musVol*mFactor,c.currentTime+0.12);}}catch(e){}try{Tone.Destination.volume.value=bFactor<0.001?-80:20*Math.log10(bFactor);}catch(e){}try{var bp=val<=50?100:Math.round((100-val)*2);var mp=val>=50?100:Math.round(val*2);document.getElementById('mixVal').textContent=bp+'/'+mp;}catch(e){}}
+function _recStreak(){try{var d=new Date();var key=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();var days=JSON.parse(localStorage.getItem('_streakDays')||'[]');if(!days.length||days[days.length-1]!==key)days.push(key);if(days.length>100)days=days.slice(-100);localStorage.setItem('_streakDays',JSON.stringify(days));}catch(e){}}
+function _getStreak(){try{var days=JSON.parse(localStorage.getItem('_streakDays')||'[]');if(!days.length)return 0;var today=new Date();today.setHours(0,0,0,0);var cnt=0;var expect=new Date(today);for(var i=days.length-1;i>=0;i--){var pts=days[i].split('-');var d=new Date(parseInt(pts[0]),parseInt(pts[1])-1,parseInt(pts[2]));var diff=Math.round((expect-d)/86400000);if(diff===0){cnt++;expect=new Date(d);expect.setDate(expect.getDate()-1);}else break;}return cnt;}catch(e){return 0;}}
+function _updStreakUI(){try{var cnt=_getStreak();var el=document.getElementById('streakCount');if(el)el.textContent=cnt;var days=JSON.parse(localStorage.getItem('_streakDays')||'[]');var today=new Date();var dots=document.querySelectorAll('#streakBar .s-dot');for(var i=0;i<7;i++){var d=new Date(today);d.setDate(d.getDate()-(6-i));var key=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();var has=days.indexOf(key)>=0;dots[i].className='s-dot'+(has?(i===6?' today':' done'):'');}}catch(e){}}
 function _getMEl(){return document.getElementById('musicAudio');}
 function _getWAC(){
   // Immer Tone.js Context verwenden — er wird durch Tone.start() entsperrt (iOS-kompatibel)
@@ -650,7 +684,7 @@ async function _pregenRevs(){
     
   }catch(e){console.warn('_pregenRevs failed',e);}
 }
-function setMVol(v){C.musVol=v;try{var c=_getWAC(),g=_getGain(),el=_getMEl();if(el&&!el.paused){g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(v,c.currentTime+0.15);}}catch(e){}}
+function setMVol(v){C.musVol=v;try{var c=_getWAC(),g=_getGain(),el=_getMEl();if(el&&!el.paused){g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(v*(typeof _mixBal==='number'&&_mixBal<50?_mixBal/50:1),c.currentTime+0.15);}}catch(e){}}
 function stopM(){
   if(_wFadeTO){clearTimeout(_wFadeTO);_wFadeTO=null;}
   var el=_getMEl();if(!el||el.paused)return;
@@ -744,6 +778,8 @@ function go(id){
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   var m={wel:'scrWel',set:'scrSet',ses:'scrSes',cmp:'scrCmp',jrn:'scrJrn'};
   document.getElementById(m[id]).classList.add('active');
+  try{var _ms=document.getElementById('mixStrip');if(_ms)_ms.style.display=id==='ses'?'block':'none';if(id==='ses'){var _sl=document.getElementById('mixSlider');if(_sl){_sl.value=_mixBal;var _bp=_mixBal<=50?100:Math.round((100-_mixBal)*2);var _mp=_mixBal>=50?100:Math.round(_mixBal*2);var _mv=document.getElementById('mixVal');if(_mv)_mv.textContent=_bp+'/'+_mp;}try{Tone.Destination.volume.value=_mixBal<=50?0:(_mixBal>=99?-80:20*Math.log10((100-_mixBal)/50));}catch(e){}}}catch(e){}
+  if(id==='wel'){try{_updStreakUI();}catch(e){}}
   if(id==='set'){stopPrev();rAll();initThemeSeg();}
   else if(id==='jrn'){stopPrev();_jrnCurrent=null;showJrnList();}
   else{stopPrev();}
@@ -902,6 +938,7 @@ function setCircle(phase,sz){
   gl.style.width=gl.style.height=(sz+40)+'px';gl.style.background=cc.col.replace(/[\d.]+\)$/,'.1)');
 }
 function animB(inh,ms){
+  _haptic('light');
   var ci=document.getElementById('sCirc'),gl=document.getElementById('sGlow'),durS=(ms/1000)+'s';
   ci.style.setProperty('--dur',durS);gl.style.setProperty('--dur',durS);
   ci.classList.remove('inhale','exhale');gl.classList.remove('inhale','exhale');
@@ -942,7 +979,7 @@ function doBr(ri,num,inh){
   },dur);
 }
 function startRet(ri){
-  if(_ab)return;S.phase='retention';S.retEl=0;
+  _haptic('medium');if(_ab)return;S.phase='retention';S.retEl=0;
   var _t2=C.musRandom?pickRandTrk():getTrk(C.mus2);fadeTransM(_t2);sTO(function(){playGong();},500);
   setCircle('retention');
   document.getElementById('sRing').style.display='none';
@@ -984,6 +1021,9 @@ function doRecovTimer(ri){
 }
 
 function showCmp(partial){
+  if(!partial){_recStreak();}
+  _updStreakUI();
+  try{Tone.Destination.volume.value=0;}catch(e){}
   releaseWakeLock();
   go('cmp');
   document.getElementById('cTitle').textContent=partial?'Session beendet':'Namaste';
