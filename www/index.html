@@ -211,18 +211,18 @@ textarea::placeholder{color:var(--text3);}
 <div class="sbanner" id="banner"></div>
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-sheet">
-    <h3 id="confirmTitle">Eintrag löschen?</h3>
-    <p id="confirmMsg">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+    <h3 id="confirmTitle">Eintrag lÃ¶schen?</h3>
+    <p id="confirmMsg">Diese Aktion kann nicht rÃ¼ckgÃ¤ngig gemacht werden.</p>
     <div class="confirm-btns">
       <button class="btn" onclick="confirmCancel()">Abbrechen</button>
-      <button class="btn" id="confirmOkBtn" style="color:rgba(220,60,60,.9);border-color:rgba(220,60,60,.25)" onclick="confirmOk()">Löschen</button>
+      <button class="btn" id="confirmOkBtn" style="color:rgba(220,60,60,.9);border-color:rgba(220,60,60,.25)" onclick="confirmOk()">LÃ¶schen</button>
     </div>
   </div>
 </div>
 <audio id="silentAudio" loop playsinline preload="auto" style="display:none"></audio>
 <audio id="musicAudio" loop playsinline preload="none" style="display:none"></audio>
 
-<!-- ═══ WELCOME ═══ -->
+<!-- âââ WELCOME âââ -->
 <div class="screen active" id="scrWel">
   <div class="container" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:max(24px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom));overflow-y:auto">
     <div style="margin-bottom:20px;animation:fadeIn 1s">
@@ -255,15 +255,15 @@ textarea::placeholder{color:var(--text3);}
       <button class="btn" style="flex:1;padding:13px 8px;font-size:14px" onclick="go('set')">Konfigurieren</button>
       <button class="btn" style="flex:1;padding:13px 8px;font-size:14px" onclick="go('jrn')">Journal</button>
     </div>
-    <div class="warn" style="animation:fadeIn 1s .6s both">⚠️ Sicherheitshinweis: Praktiziere diese Atemtechnik nie im Wasser, beim Autofahren oder Stehen. Setze oder lege dich bequem hin. Bei Schwindel sofort aufhören.</div>
+    <div class="warn" style="animation:fadeIn 1s .6s both">â ï¸ Sicherheitshinweis: Praktiziere diese Atemtechnik nie im Wasser, beim Autofahren oder Stehen. Setze oder lege dich bequem hin. Bei Schwindel sofort aufhÃ¶ren.</div>
   </div>
 </div>
 
-<!-- ═══ SETTINGS ═══ -->
+<!-- âââ SETTINGS âââ -->
 <div class="screen" id="scrSet" style="justify-content:flex-start;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh">
   <div class="container" style="flex:1;overflow-y:auto;padding-top:max(24px,env(safe-area-inset-top));padding-bottom:16px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
-      <button class="btn btn-sm" onclick="stopPrev();go('wel')">← Zurück</button>
+      <button class="btn btn-sm" onclick="stopPrev();go('wel')">â ZurÃ¼ck</button>
       <h2 class="serif" style="font-weight:300;font-size:22px;color:var(--text)">Einstellungen</h2>
       <div style="width:80px"></div>
     </div>
@@ -276,8 +276,8 @@ textarea::placeholder{color:var(--text3);}
 
     <!-- Tab 0: Grundlagen -->
     <div id="tc0">
-      <div class="crd"><div class="lbl">Anzahl Durchgänge</div><div id="rndB" style="display:flex;gap:8px"></div></div>
-      <div class="crd"><div class="lbl">Atemzüge pro Durchgang</div><div id="brB" style="display:flex;flex-wrap:wrap;gap:8px"></div></div>
+      <div class="crd"><div class="lbl">Anzahl DurchgÃ¤nge</div><div id="rndB" style="display:flex;gap:8px"></div></div>
+      <div class="crd"><div class="lbl">AtemzÃ¼ge pro Durchgang</div><div id="brB" style="display:flex;flex-wrap:wrap;gap:8px"></div></div>
       <div class="crd">
         <div class="lbl">Atemfrequenz</div>
         <div class="sldrow" style="margin-bottom:4px">
@@ -288,7 +288,7 @@ textarea::placeholder{color:var(--text3);}
         <div class="set-row" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--sep)">
           <div>
             <div style="font-size:14px;color:var(--text)">Ansteigend</div>
-            <div style="font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4">Start bei 12/min, steigt bis zur gewählten Frequenz</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4">Start bei 12/min, steigt bis zur gewÃ¤hlten Frequenz</div>
           </div>
           <label class="ios-tog"><input type="checkbox" id="ascChk" onchange="C.ascending=this.checked;saveC()"><span class="ios-tog-track"></span></label>
         </div>
@@ -298,8 +298,8 @@ textarea::placeholder{color:var(--text3);}
     <!-- Tab 1: Haltezeiten -->
     <div id="tc1" style="display:none">
       <div class="crd">
-        <div class="lbl">Haltezeit Phase 2 — pro Durchgang</div>
-        <p style="font-size:13px;color:var(--text3);margin-bottom:16px;line-height:1.5">Stelle für jeden Durchgang die Haltezeit nach dem Ausatmen ein.</p>
+        <div class="lbl">Haltezeit Phase 2 â pro Durchgang</div>
+        <p style="font-size:13px;color:var(--text3);margin-bottom:16px;line-height:1.5">Stelle fÃ¼r jeden Durchgang die Haltezeit nach dem Ausatmen ein.</p>
         <div class="set-row" style="padding-top:0">
           <span>Freies Halten (selbst beenden)</span>
           <label class="ios-tog"><input type="checkbox" id="frChk" onchange="C.freeRet=this.checked;rRet();saveC()"><span class="ios-tog-track"></span></label>
@@ -311,12 +311,12 @@ textarea::placeholder{color:var(--text3);}
     <!-- Tab 2: Musik -->
     <div id="tc2" style="display:none">
       <div class="crd">
-        <div class="lbl">Musiklautstärke</div>
+        <div class="lbl">MusiklautstÃ¤rke</div>
         <div class="sldrow">
-          <span style="font-size:13px;color:var(--text3)">🔈</span>
+          <span style="font-size:13px;color:var(--text3)">ð</span>
           <input type="range" min="0" max="100" step="1" id="musVolSlider" style="flex:1" oninput="setMVol(this.value/100);document.getElementById('musVolVal').textContent=Math.round(this.value)+'%';saveC();">
           <span class="val" id="musVolVal">55%</span>
-          <span style="font-size:13px;color:var(--text3)">🔊</span>
+          <span style="font-size:13px;color:var(--text3)">ð</span>
         </div>
         <div class="set-row">
           <span>Zufallsmodus (jede Phase neue Melodie)</span>
@@ -324,21 +324,21 @@ textarea::placeholder{color:var(--text3);}
         </div>
       </div>
       <div class="crd" id="musManualBlock">
-        <div class="lbl">Musik — Atemphase</div>
+        <div class="lbl">Musik â Atemphase</div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
           <select id="musSel1" class="mus-sel" onchange="C.mus1=+this.value;updateMusPrevBtns();saveC()"></select>
-          <button class="pbtn" id="musPrev1Btn" onclick="toggleMusPrev(1)" style="display:none">▶</button>
+          <button class="pbtn" id="musPrev1Btn" onclick="toggleMusPrev(1)" style="display:none">â¶</button>
         </div>
-        <div class="lbl">Musik — Haltephase</div>
+        <div class="lbl">Musik â Haltephase</div>
         <div style="display:flex;align-items:center;gap:8px">
           <select id="musSel2" class="mus-sel" onchange="C.mus2=+this.value;updateMusPrevBtns();saveC()"></select>
-          <button class="pbtn" id="musPrev2Btn" onclick="toggleMusPrev(2)" style="display:none">▶</button>
+          <button class="pbtn" id="musPrev2Btn" onclick="toggleMusPrev(2)" style="display:none">â¶</button>
         </div>
       </div>
       <div class="crd">
         <div class="lbl">Eigene MP3 Dateien</div>
         <button class="btn" style="width:100%;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="document.getElementById('fileIn').click()">
-          <span>🎵</span> MP3 hochladen
+          <span>ðµ</span> MP3 hochladen
         </button>
         <input type="file" id="fileIn" accept=".mp3,audio/mpeg,audio/*" multiple style="display:none" onchange="handleUpload(this.files);this.value=''">
         <div id="trackList"></div>
@@ -353,9 +353,9 @@ textarea::placeholder{color:var(--text3);}
           <span>Darstellungsmodus</span>
         </div>
         <div class="theme-seg" id="themeSeg">
-          <button onclick="setThemePref('light',this)">☀️ Hell</button>
+          <button onclick="setThemePref('light',this)">âï¸ Hell</button>
           <button onclick="setThemePref('system',this)" class="on">Automatisch</button>
-          <button onclick="setThemePref('dark',this)">🌙 Dunkel</button>
+          <button onclick="setThemePref('dark',this)">ð Dunkel</button>
         </div>
       </div>
       <div class="crd">
@@ -366,10 +366,10 @@ textarea::placeholder{color:var(--text3);}
         </div>
         <div class="lbl" style="margin-top:12px">Sprachtempo</div>
         <div class="sldrow">
-          <span style="font-size:13px;color:var(--text3)">🐢</span>
+          <span style="font-size:13px;color:var(--text3)">ð¢</span>
           <input type="range" min="60" max="120" step="5" id="voiceRateSlider" style="flex:1" oninput="C.voiceRate=this.value/100;document.getElementById('voiceRateVal').textContent=Math.round(this.value)+'%';saveC()">
           <span class="val" id="voiceRateVal">88%</span>
-          <span style="font-size:13px;color:var(--text3)">🐇</span>
+          <span style="font-size:13px;color:var(--text3)">ð</span>
         </div>
         <button class="btn btn-sm" style="margin-top:4px" onclick="say('Einatmen, zwei, drei, vier. Halten. Ausatmen, entspannen.')">Testansage</button>
       </div>
@@ -383,7 +383,7 @@ textarea::placeholder{color:var(--text3);}
           var box=document.getElementById('voiceHintBox');
           var el=document.getElementById('voiceHintText');
           if(isNative){box.style.display='none';}
-          else{el.textContent='Sprachansagen verwenden die Systemstimme des Browsers. In der App-Version stehen native Stimmen zur Verfügung.';}
+          else{el.textContent='Sprachansagen verwenden die Systemstimme des Browsers. In der App-Version stehen native Stimmen zur VerfÃ¼gung.';}
         })();
       </script>
     </div>
@@ -393,11 +393,11 @@ textarea::placeholder{color:var(--text3);}
   </div>
 </div>
 
-<!-- ═══ SESSION ═══ -->
+<!-- âââ SESSION âââ -->
 <div class="screen" id="scrSes">
   <div class="container" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:max(24px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom))">
     <div class="topbar">
-      <button class="btn btn-sm" onclick="abortSes()">✕ Beenden</button>
+      <button class="btn btn-sm" onclick="abortSes()">â Beenden</button>
       <div id="sRI" style="font-size:13px;color:var(--text3);letter-spacing:1px"></div>
     </div>
     <div class="dots" id="sDots"></div>
@@ -415,7 +415,7 @@ textarea::placeholder{color:var(--text3);}
     <div class="timer" id="sTmr" style="display:none"></div>
     <div class="msg" id="sMsg"></div>
     <div id="sFRC" style="display:none;margin-top:24px">
-      <button class="btn btn-p" style="padding:14px 36px" onclick="endFreeRet()">Atem gelöst — weiter</button>
+      <button class="btn btn-p" style="padding:14px 36px" onclick="endFreeRet()">Atem gelÃ¶st â weiter</button>
     </div>
     <div id="sRetBtns" style="display:none;margin-top:24px;flex-direction:row;gap:12px;justify-content:center">
       <button class="btn" style="padding:12px 20px" onclick="extendRet(10)">+10 Sek.</button>
@@ -426,7 +426,7 @@ textarea::placeholder{color:var(--text3);}
   </div>
 </div>
 
-<!-- ═══ COMPLETE ═══ -->
+<!-- âââ COMPLETE âââ -->
 <div class="screen" id="scrCmp">
   <div class="container" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding-top:max(24px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom));overflow-y:auto">
     <div style="animation:fadeIn .8s;margin-bottom:20px">
@@ -446,7 +446,7 @@ textarea::placeholder{color:var(--text3);}
   </div>
 </div>
 
-<!-- ═══ JOURNAL ═══ -->
+<!-- âââ JOURNAL âââ -->
 <div class="screen" id="scrJrn" style="justify-content:flex-start;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh">
 
   <!-- Eintrag-Editor -->
@@ -456,7 +456,7 @@ textarea::placeholder{color:var(--text3);}
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
           <button class="btn btn-sm" id="jrnCancelBtn" onclick="cancelJrnEntry()">Abbrechen</button>
           <h2 class="serif" style="font-weight:300;font-size:20px;color:var(--text)">Journal</h2>
-          <button class="btn btn-sm" id="jrnDelBtn" style="display:none;color:rgba(220,60,60,.8);border-color:rgba(220,60,60,.2)" onclick="deleteJrnEntry()">Löschen</button>
+          <button class="btn btn-sm" id="jrnDelBtn" style="display:none;color:rgba(220,60,60,.8);border-color:rgba(220,60,60,.2)" onclick="deleteJrnEntry()">LÃ¶schen</button>
         </div>
         <div class="crd">
           <div class="lbl">Session</div>
@@ -469,7 +469,7 @@ textarea::placeholder{color:var(--text3);}
       </div>
     </div>
     <div style="width:100%;background:var(--bbar-bg);padding:14px 20px max(24px,env(safe-area-inset-bottom));display:flex;gap:12px;justify-content:center;flex-shrink:0">
-      <button class="btn" style="flex:1;max-width:160px;padding:14px" onclick="cancelJrnEntry()" id="jrnSkipBtn">Überspringen</button>
+      <button class="btn" style="flex:1;max-width:160px;padding:14px" onclick="cancelJrnEntry()" id="jrnSkipBtn">Ãberspringen</button>
       <button class="btn btn-p" style="flex:1;max-width:200px;padding:14px" onclick="saveJrnEntry()">Speichern</button>
     </div>
   </div>
@@ -478,9 +478,9 @@ textarea::placeholder{color:var(--text3);}
   <div id="jrnListView" style="display:none;flex:1;overflow-y:auto;width:100%">
     <div class="container" style="padding-top:max(24px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom))">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
-        <button class="btn btn-sm" onclick="go('wel')">← Zurück</button>
+        <button class="btn btn-sm" onclick="go('wel')">â ZurÃ¼ck</button>
         <h2 class="serif" style="font-weight:300;font-size:22px;color:var(--text)">Journal</h2>
-        <button class="btn btn-sm" id="jrnPdfBtn" onclick="exportJournalPDF()">📄 PDF</button>
+        <button class="btn btn-sm" id="jrnPdfBtn" onclick="exportJournalPDF()">ð PDF</button>
       </div>
       <div id="jrnEntries"></div>
     </div>
@@ -490,7 +490,7 @@ textarea::placeholder{color:var(--text3);}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 <script>
-// ═══ THEME ═══
+// âââ THEME âââ
 function setThemePref(pref,el){
   localStorage.setItem('pbTheme',pref);
   var dark=pref==='dark'||(pref==='system'&&window.matchMedia('(prefers-color-scheme:dark)').matches);
@@ -511,7 +511,7 @@ function isDark(){return document.documentElement.getAttribute('data-theme')==='
 function initThemeSeg(){updateThemeSegUI(localStorage.getItem('pbTheme')||'system');}
 document.addEventListener('DOMContentLoaded',function(){initThemeSeg();});
 
-// ═══ CONFIG ═══
+// âââ CONFIG âââ
 var C={rounds:3,breathCount:30,bpm:16,ascending:false,mus1:0,mus2:0,retTimes:[60,90,120,150,180],freeRet:false,musVol:0.55,musRandom:false,voiceURI:'',voiceOn:true,voiceRate:0.88};
 function saveC(){try{localStorage.setItem('pbC',JSON.stringify(C));}catch(e){}}
 function loadC(){try{var s=localStorage.getItem('pbC');if(s){var o=JSON.parse(s);for(var k in o){if(Object.prototype.hasOwnProperty.call(o,k))C[k]=o[k];}}}catch(e){}}
@@ -523,7 +523,7 @@ function gSpd(n){
   return bpmToSpd(12+(C.bpm-12)*p);
 }
 var TRK=[
-  {id:0,n:"Keine Musik",d:"Nur Atemgeräusche und Stimme",type:'none'},
+  {id:0,n:"Keine Musik",d:"Nur AtemgerÃ¤usche und Stimme",type:'none'},
   {id:-1,n:"Ocean Beats",d:"Vorinstalliert",type:'preinstalled',builtin:true,src:'./musik/ozean.mp3'},
   {id:-2,n:"Electric Flight",d:"Vorinstalliert",type:'preinstalled',builtin:true,src:'./musik/wald.mp3'},
   {id:-3,n:"Crystal Chill",d:"Vorinstalliert",type:'preinstalled',builtin:true,src:'./musik/kristall.mp3'},
@@ -534,7 +534,7 @@ var _trackId=1;
 function getTrk(id){return TRK.find(function(t){return t.id===id;})||TRK[0];}
 function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.round(b/1024)+' KB';}
 
-// ═══ IndexedDB (v2 — tracks + journal) ═══
+// âââ IndexedDB (v2 â tracks + journal) âââ
 var _db=null;
 function openDB(cb){
   if(_db){cb(_db);return;}
@@ -566,13 +566,13 @@ function rTrackList(){
   tracks.forEach(function(t){
     var d=document.createElement('div');
     d.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--sep)';
-    var delBtn='<button class="btn btn-sm" onclick="removeTrack('+t.id+')" style="padding:5px 10px;font-size:12px;color:rgba(220,80,60,.8);border-color:rgba(220,80,60,.2);flex-shrink:0">✕</button>';
-    d.innerHTML='<div style="font-size:18px">🎵</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text)">'+t.n+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px">'+t.d+'</div></div>'+delBtn;
+    var delBtn='<button class="btn btn-sm" onclick="removeTrack('+t.id+')" style="padding:5px 10px;font-size:12px;color:rgba(220,80,60,.8);border-color:rgba(220,80,60,.2);flex-shrink:0">â</button>';
+    d.innerHTML='<div style="font-size:18px">ðµ</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text)">'+t.n+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px">'+t.d+'</div></div>'+delBtn;
     c.appendChild(d);
   });
 }
 
-// ═══ BACKGROUND RESILIENCE ═══
+// âââ BACKGROUND RESILIENCE âââ
 (function(){
   try{
     var sr=44100,nSamples=sr,nBytes=nSamples*2;
@@ -592,7 +592,7 @@ async function requestWakeLock(){if(!('wakeLock'in navigator))return;try{_wakeLo
 function releaseWakeLock(){if(_wakeLock){try{_wakeLock.release();}catch(e){}}_wakeLock=null;}
 function setupMediaSession(title){
   if(!('mediaSession'in navigator))return;
-  navigator.mediaSession.metadata=new MediaMetadata({title:title||'Power Breathing Protokoll',artist:'Praxis Dr. Passers',album:'Atemübung'});
+  navigator.mediaSession.metadata=new MediaMetadata({title:title||'Power Breathing Protokoll',artist:'Praxis Dr. Passers',album:'AtemÃ¼bung'});
   ['play','pause','stop'].forEach(function(a){try{navigator.mediaSession.setActionHandler(a,function(){});}catch(e){}});
   navigator.mediaSession.playbackState='playing';
 }
@@ -608,16 +608,16 @@ document.addEventListener('visibilitychange',function(){
   if(!_ab&&S.phase==='recovery'&&_recovStartTime&&_iv){document.getElementById('sTmr').textContent=ft(Math.floor((Date.now()-_recovStartTime)/1000));}
 });
 
-// ═══ AUDIO ENGINE ═══
-// Verwende Tone.js AudioContext — wird durch Tone.start() (User Gesture) entsperrt
+// âââ AUDIO ENGINE âââ
+// Verwende Tone.js AudioContext â wird durch Tone.start() (User Gesture) entsperrt
 var _wac=null,_wgain=null,_wmSrc=null,_wFadeTO=null;
 var _revGong=null,_revChime=null;
 function _getMEl(){return document.getElementById('musicAudio');}
 function _getWAC(){
-  // Immer Tone.js Context verwenden — er wird durch Tone.start() entsperrt (iOS-kompatibel)
+  // Immer Tone.js Context verwenden â er wird durch Tone.start() entsperrt (iOS-kompatibel)
   try{
     var toneCtx=Tone.getContext().rawContext;
-    if(_wac!==toneCtx){_wac=toneCtx;_wgain=null;} // Context geändert: Gain zurücksetzen
+    if(_wac!==toneCtx){_wac=toneCtx;_wgain=null;} // Context geÃ¤ndert: Gain zurÃ¼cksetzen
   }catch(e){
     if(!_wac)_wac=new(window.AudioContext||window.webkitAudioContext)();
   }
@@ -640,9 +640,9 @@ function _ensureMediaSrc(){
 async function _pregenRevs(){
   if(_revGong&&_revChime)return;
   try{
-    _revGong=new Tone.Reverb({decay:10,wet:0.78,preDelay:0.03}).toDestination();
-    _revChime=new Tone.Reverb({decay:6,wet:0.72}).toDestination();
-    await Promise.all([_revGong.generate(),_revChime.generate()]);
+    _revGong=new Tone.Freeverb({roomSize:0.75, dampening:3000}).toDestination();
+    _revChime=new Tone.Freeverb({roomSize:0.65, dampening:4000}).toDestination();
+    // reverbs ready (Freeverb - no generate needed)
   }catch(e){console.warn('_pregenRevs failed',e);}
 }
 function setMVol(v){C.musVol=v;try{var c=_getWAC(),g=_getGain(),el=_getMEl();if(el&&!el.paused){g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(v,c.currentTime+0.15);}}catch(e){}}
@@ -701,7 +701,7 @@ async function playBreath(inh,ms){
 
 async function playChimeS(){
   await Tone.start();
-  var rev=_revChime||new Tone.Reverb({decay:6,wet:0.72}).toDestination();
+  var rev=_revChime||new Tone.Freeverb({roomSize:0.65, dampening:4000}).toDestination();
   var chime=new Tone.PolySynth(Tone.FMSynth,{harmonicity:6.2,modulationIndex:2.8,oscillator:{type:'sine'},modulation:{type:'sine'},envelope:{attack:0.004,decay:0.45,sustain:0.05,release:5.5},modulationEnvelope:{attack:0.004,decay:0.18,sustain:0,release:3.5},volume:-7}).connect(rev);
   var now=Tone.now();
   [[523.25,0],[659.26,0.22],[783.99,0.44],[1046.5,0.68],[1318.5,0.9]].forEach(function(p){chime.triggerAttackRelease(p[0],'1n',now+p[1]);});
@@ -710,7 +710,7 @@ async function playChimeS(){
 
 async function playGong(){
   await Tone.start();
-  var rev=_revGong||new Tone.Reverb({decay:10,wet:0.78,preDelay:0.03}).toDestination();
+  var rev=_revGong||new Tone.Freeverb({roomSize:0.75, dampening:3000}).toDestination();
   var ch=new Tone.Chorus(0.4,10,0.65).start().connect(rev);
   var gong=new Tone.PolySynth(Tone.FMSynth,{harmonicity:1.015,modulationIndex:1.6,oscillator:{type:'sine'},modulation:{type:'sine'},envelope:{attack:0.008,decay:0.8,sustain:0.65,release:10},modulationEnvelope:{attack:0.008,decay:0.4,sustain:0.25,release:8},volume:-5}).connect(ch);
   var rootHz=174.61,now=Tone.now();
@@ -719,7 +719,7 @@ async function playGong(){
   setTimeout(function(){try{gong.dispose();ch.dispose();if(rev!==_revGong)rev.dispose();}catch(e){}},16000);
 }
 
-// ═══ SPEECH ═══
+// âââ SPEECH âââ
 var _bto=null;
 function say(txt,cb){
   var b=document.getElementById('banner');b.textContent=txt;b.classList.add('vis');clearTimeout(_bto);_bto=setTimeout(function(){b.classList.remove('vis');},3500);
@@ -734,7 +734,7 @@ function say(txt,cb){
 }
 if(window.speechSynthesis){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=function(){speechSynthesis.getVoices();};}
 
-// ═══ NAV ═══
+// âââ NAV âââ
 function go(id){
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   var m={wel:'scrWel',set:'scrSet',ses:'scrSes',cmp:'scrCmp',jrn:'scrJrn'};
@@ -749,7 +749,7 @@ function stab(i,el){
   for(var j=0;j<4;j++){var tc=document.getElementById('tc'+j);if(tc)tc.style.display=j===i?'':'none';}
 }
 
-// ═══ SETTINGS UI ═══
+// âââ SETTINGS UI âââ
 var _prev=null;
 function rMusSettings(){
   var sl=document.getElementById('musVolSlider');if(sl){sl.value=Math.round((C.musVol||0.55)*100);document.getElementById('musVolVal').textContent=sl.value+'%';}
@@ -802,7 +802,7 @@ function updateMusPrevBtns(){
     var playable=trk&&(trk.type==='mp3'||trk.type==='preinstalled');
     btn.style.display=playable?'flex':'none';
     var playing=_prev===id;
-    btn.textContent=playing?'■':'▶';
+    btn.textContent=playing?'â ':'â¶';
     btn.classList.toggle('on',playing);
   });
 }
@@ -815,7 +815,7 @@ function toggleMusPrev(slot){
 }
 function stopPrev(){stopM();_prev=null;updateMusPrevBtns();}
 
-// ═══ SESSION ═══
+// âââ SESSION âââ
 var S={},_tos=[],_iv=null,_ab=false,_retMaxT=0;
 function extendRet(secs){if(S.phase!=='retention')return;_retMaxT+=secs;document.getElementById('sRTgt').textContent='Ziel: '+ft(_retMaxT);}
 function cTO(){_tos.forEach(clearTimeout);_tos=[];if(_iv){clearInterval(_iv);_iv=null;}}
@@ -849,7 +849,7 @@ function abortSes(){
   _ab=true;cTO();stopM();
   if(speechSynthesis)speechSynthesis.cancel();
   // Reset circle to neutral before showing summary
-  try{var ci=document.getElementById('sCirc'),gl=document.getElementById('sGlow');if(ci){ci.classList.remove('inhale','exhale');}if(gl){gl.classList.remove('inhale','exhale');}setCircle('breathing');}catch(e){}
+  try{var ci=document.getElementById('sCirc'),gl=document.getElementById('sGlow');if(ci){ci.style.transition='none';ci.style.animation='none';void ci.offsetWidth;ci.classList.remove('inhale','exhale');ci.style.removeProperty('transform');ci.style.removeProperty('opacity');}if(gl){gl.style.transition='none';gl.style.animation='none';void gl.offsetWidth;gl.classList.remove('inhale','exhale');}setCircle('breathing');}catch(e){}
   showCmp(true);
 }
 function rDots(){
@@ -901,7 +901,7 @@ function doBr(ri,num,inh){
   document.getElementById('sCnt').textContent=num+' / '+C.breathCount;
   document.getElementById('sMsg').textContent=inh?'Tief einatmen':'Entspannt ausatmen';
   document.getElementById('sArc').setAttribute('stroke-dashoffset',2*Math.PI*130*(1-num/C.breathCount));
-  if(num===C.breathCount-9&&inh)say('Noch 10 Atemzüge');
+  if(num===C.breathCount-9&&inh)say('Noch 10 AtemzÃ¼ge');
   if(num===C.breathCount&&inh)sTO(function(){if(!_ab)say('Atme tief aus und halte den Atem');},dur*.3);
   sTO(function(){
     if(_ab)return;
@@ -917,13 +917,13 @@ function startRet(ri){
   document.getElementById('sRing').style.display='none';
   document.getElementById('sBN').textContent='';document.getElementById('sBL').textContent='Atem halten';
   document.getElementById('sPL').textContent='Atem halten';
-  document.getElementById('sMsg').textContent='Halten — Körper komplett entspannen';
+  document.getElementById('sMsg').textContent='Halten â KÃ¶rper komplett entspannen';
   document.getElementById('sTmr').style.display='';document.getElementById('sTmr').textContent='00:00';
   document.getElementById('sCnt').style.display='none';
   _retMaxT=C.freeRet?Infinity:(C.retTimes[ri]||60);
   if(C.freeRet){document.getElementById('sFRC').style.display='block';document.getElementById('sRetBtns').style.display='none';document.getElementById('sRTgt').style.display='none';}
   else{document.getElementById('sFRC').style.display='none';document.getElementById('sRetBtns').style.display='flex';document.getElementById('sRTgt').style.display='';document.getElementById('sRTgt').textContent='Ziel: '+ft(_retMaxT);}
-  _retStartTime=Date.now();setupMediaSession('Atem halten — Durchgang '+(ri+1));
+  _retStartTime=Date.now();setupMediaSession('Atem halten â Durchgang '+(ri+1));
   if(_iv)clearInterval(_iv);
   _iv=setInterval(function(){
     if(_ab){clearInterval(_iv);return;}S.retEl=Math.floor((Date.now()-_retStartTime)/1000);document.getElementById('sTmr').textContent=ft(S.retEl);
@@ -937,18 +937,18 @@ function startRecov(ri,rt){
   setCircle('recovery');
   document.getElementById('sBN').textContent='';document.getElementById('sBL').textContent='Recovery';
   document.getElementById('sPL').textContent='Recovery Breath';
-  document.getElementById('sMsg').textContent='Tief einatmen — 15 Sek. halten';
+  document.getElementById('sMsg').textContent='Tief einatmen â 15 Sek. halten';
   document.getElementById('sRTgt').style.display='none';document.getElementById('sFRC').style.display='none';
   document.getElementById('sRetBtns').style.display='none';document.getElementById('sTmr').textContent='00:00';
   sTO(function(){if(S.phase==='recovery'&&!_iv&&!_ab)doRecovTimer(ri);},4000);
 }
 function doRecovTimer(ri){
-  if(_iv)return;_recovStartTime=Date.now();setupMediaSession('Recovery Breath — Durchgang '+(ri+1));
+  if(_iv)return;_recovStartTime=Date.now();setupMediaSession('Recovery Breath â Durchgang '+(ri+1));
   _iv=setInterval(function(){
     if(_ab){clearInterval(_iv);_iv=null;return;}
     var el=Math.floor((Date.now()-_recovStartTime)/1000);document.getElementById('sTmr').textContent=ft(el);
     if(el>=15){clearInterval(_iv);_iv=null;say('Atme aus und entspanne Dich');document.getElementById('sMsg').textContent='Ausatmen und entspannen';playChimeS();
-      sTO(function(){if(_ab)return;if(ri+1<C.rounds){document.getElementById('sPL').textContent='Durchgang abgeschlossen';document.getElementById('sMsg').textContent='Durchgang '+(ri+1)+' abgeschlossen ✓';document.getElementById('sTmr').style.display='none';sTO(function(){startRnd(ri+1);},3500);}else{stopM();try{var ci=document.getElementById('sCirc'),gl=document.getElementById('sGlow');if(ci)ci.classList.remove('inhale','exhale');if(gl)gl.classList.remove('inhale','exhale');setCircle('breathing');}catch(e){}showCmp(false);}},3000);}
+      sTO(function(){if(_ab)return;if(ri+1<C.rounds){document.getElementById('sPL').textContent='Durchgang abgeschlossen';document.getElementById('sMsg').textContent='Durchgang '+(ri+1)+' abgeschlossen â';document.getElementById('sTmr').style.display='none';sTO(function(){startRnd(ri+1);},3500);}else{stopM();try{var ci=document.getElementById('sCirc'),gl=document.getElementById('sGlow');if(ci)ci.classList.remove('inhale','exhale');if(gl)gl.classList.remove('inhale','exhale');setCircle('breathing');}catch(e){}showCmp(false);}},3000);}
   },500);
 }
 
@@ -958,8 +958,8 @@ function showCmp(partial){
   document.getElementById('cTitle').textContent=partial?'Session beendet':'Namaste';
   var rDone=S.retResults?S.retResults.length:0;
   document.getElementById('cSum').textContent=partial?
-    (rDone+' von '+C.rounds+' Durchgängen abgeschlossen'):
-    ('Session abgeschlossen — '+C.rounds+' Durchgänge');
+    (rDone+' von '+C.rounds+' DurchgÃ¤ngen abgeschlossen'):
+    ('Session abgeschlossen â '+C.rounds+' DurchgÃ¤nge');
   var cards=document.getElementById('cCards'),tot=0;cards.innerHTML='';
   (S.retResults||[]).forEach(function(t,i){tot+=t;var d=document.createElement('div');d.className='rcard';d.innerHTML='<div style="font-size:11px;color:var(--text3);margin-bottom:4px">Runde '+(i+1)+'</div><div class="rtime">'+ft(t)+'</div>';cards.appendChild(d);});
   document.getElementById('cTot').textContent=tot?'Gesamt: '+ft(tot)+' Haltezeit':'';
@@ -974,7 +974,7 @@ function showCmp(partial){
   }
 }
 
-// ═══ JOURNAL ═══
+// âââ JOURNAL âââ
 var _jrnCurrent=null,_jrnIsNew=false;
 
 function openJrnFromSession(partial){
@@ -1032,7 +1032,7 @@ function showJrnEditor(){
   var skipBtn=document.getElementById('jrnSkipBtn');
   if(delBtn)delBtn.style.display=_jrnIsNew?'none':'';
   if(cancelBtn)cancelBtn.textContent=_jrnIsNew?'Abbrechen':'Abbrechen';
-  if(skipBtn)skipBtn.textContent=_jrnIsNew?'Überspringen':'Abbrechen';
+  if(skipBtn)skipBtn.textContent=_jrnIsNew?'Ãberspringen':'Abbrechen';
   var notes=document.getElementById('jrnNotes');
   if(notes)notes.value=_jrnCurrent?(_jrnCurrent.notes||''):'';
   renderJrnStats();
@@ -1054,9 +1054,9 @@ function renderJrnStats(){
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:13px">'+
     '<div><div style="color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Datum</div><div style="font-weight:600">'+e.date+'</div></div>'+
     '<div><div style="color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Uhrzeit</div><div style="font-weight:600">'+e.time+'</div></div>'+
-    '<div><div style="color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Ort</div><div style="font-weight:600" id="jrnCityVal">'+(e.city||'–')+'</div></div>'+
-    '<div><div style="color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Durchgänge</div><div style="font-weight:600">'+e.completedRounds+'/'+e.totalRounds+partialTag+'</div></div>'+
-    '<div><div style="color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Atemzüge</div><div style="font-weight:600">'+e.breathCount+'</div></div>'+
+    '<div><div style="color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Ort</div><div style="font-weight:600" id="jrnCityVal">'+(e.city||'â')+'</div></div>'+
+    '<div><div style="color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">DurchgÃ¤nge</div><div style="font-weight:600">'+e.completedRounds+'/'+e.totalRounds+partialTag+'</div></div>'+
+    '<div><div style="color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">AtemzÃ¼ge</div><div style="font-weight:600">'+e.breathCount+'</div></div>'+
     '<div><div style="color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Frequenz</div><div style="font-weight:600">'+e.bpm+' /min</div></div>'+
     '</div>'+holdHtml+
     (e.totalHold?'<div style="margin-top:10px;font-size:12px;color:var(--text3)">Haltezeit gesamt: <strong style="color:var(--accent-text)">'+ft(e.totalHold)+'</strong></div>':'');
@@ -1081,7 +1081,7 @@ function cancelJrnEntry(){
 
 var _confirmCb=null;
 function showConfirm(title,msg,okLabel,cb){
-  document.getElementById('confirmTitle').textContent=title||'Bestätigen';
+  document.getElementById('confirmTitle').textContent=title||'BestÃ¤tigen';
   document.getElementById('confirmMsg').textContent=msg||'';
   document.getElementById('confirmOkBtn').textContent=okLabel||'OK';
   _confirmCb=cb;
@@ -1095,18 +1095,38 @@ function confirmCancel(){
   document.getElementById('confirmOverlay').classList.remove('vis');
   _confirmCb=null;
 }
-function exportJournalPDF(){window.print();}
-function deleteJrnEntry(){
-  if(!_jrnCurrent)return;
-  showConfirm('Eintrag löschen?','Diese Aktion kann nicht rückgängig gemacht werden.','Löschen',function(){
-    var id=_jrnCurrent.id;
-    openDB(function(db){
-      if(!db)return;
-      var tx=db.transaction('journal','readwrite');
-      tx.objectStore('journal').delete(id);
-      tx.oncomplete=function(){_jrnCurrent=null;_jrnIsNew=false;showJrnList();};
-    });
-  });
+function exportJournalPDF(){
+  var req=indexedDB.open('wimhof_musik',1);
+  req.onsuccess=function(e){
+    var db=e.target.result;
+    var tx=db.transaction('journal','readonly');
+    var store=tx.objectStore('journal');
+    var getAllReq=store.getAll();
+    getAllReq.onsuccess=function(ev){
+      var entries=ev.target.result||[];
+      if(!entries.length){alert('Keine Einträge im Journal.');return;}
+      var html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>Atemprotokoll</title>';
+      html+='<style>body{font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px}';
+      html+='h1{color:#2d6a4f;border-bottom:2px solid #2d6a4f;padding-bottom:8px}';
+      html+='.entry{border:1px solid #ddd;border-radius:8px;padding:12px;margin:12px 0}';
+      html+='.date{font-weight:bold;color:#555}';
+      html+='@media print{button{display:none}}</style></head><body>';
+      html+='<h1>Atemprotokoll Journal</h1>';
+      html+='<button onclick="window.print()" style="margin-bottom:16px;padding:8px 16px;background:#2d6a4f;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer">Drucken / Als PDF speichern</button>';
+      entries.sort(function(a,b){return (b.id||0)-(a.id||0);}).forEach(function(en){
+        html+='<div class="entry">';
+        if(en.date||en.ts||en.time) html+='<div class="date">'+(en.date||en.ts||en.time||'')+'</div>';
+        if(en.rounds!=null) html+='<div>Runden: '+en.rounds+'</div>';
+        if(en.dur||en.duration) html+='<div>Dauer: '+(en.dur||en.duration)+'</div>';
+        if(en.note) html+='<div style="margin-top:8px;color:#333">'+en.note+'</div>';
+        html+='</div>';
+      });
+      html+='</body></html>';
+      var blob=new Blob([html],{type:'text/html'});
+      var url=URL.createObjectURL(blob);
+      window.open(url,'_blank');
+    };
+  };
 }
 
 function showJrnList(){
@@ -1130,21 +1150,21 @@ function loadJrnEntries(){
 function renderJrnList(entries){
   var c=document.getElementById('jrnEntries');if(!c)return;
   if(!entries||!entries.length){
-    c.innerHTML='<div style="text-align:center;padding:60px 0"><div style="font-family:\'Cormorant Garamond\',serif;font-size:22px;font-weight:300;color:var(--text3)">Noch keine Einträge</div><div style="font-size:13px;color:var(--text3);margin-top:8px">Starte eine Session und tippe auf Journal</div></div>';
+    c.innerHTML='<div style="text-align:center;padding:60px 0"><div style="font-family:\'Cormorant Garamond\',serif;font-size:22px;font-weight:300;color:var(--text3)">Noch keine EintrÃ¤ge</div><div style="font-size:13px;color:var(--text3);margin-top:8px">Starte eine Session und tippe auf Journal</div></div>';
     return;
   }
   c.innerHTML=entries.map(function(e){
-    var runden=e.completedRounds+'/'+e.totalRounds+(e.partial?' ✕':'');
+    var runden=e.completedRounds+'/'+e.totalRounds+(e.partial?' â':'');
     var notesSnippet=e.notes?'<div style="font-size:12px;color:var(--text2);margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+e.notes+'</div>':'';
     return '<div class="crd jrn-entry" onclick="openJrnEntry('+e.id+')">'+
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">'+
       '<div style="flex:1;min-width:0">'+
       '<div style="font-size:14px;font-weight:600;color:var(--text)">'+e.date+'</div>'+
-      '<div style="font-size:12px;color:var(--text3);margin-top:3px">'+e.time+(e.city?' · '+e.city:'')+'</div>'+
-      '<div style="font-size:12px;color:var(--text3);margin-top:2px">'+runden+' Runden · '+e.breathCount+' Atemzüge</div>'+
+      '<div style="font-size:12px;color:var(--text3);margin-top:3px">'+e.time+(e.city?' Â· '+e.city:'')+'</div>'+
+      '<div style="font-size:12px;color:var(--text3);margin-top:2px">'+runden+' Runden Â· '+e.breathCount+' AtemzÃ¼ge</div>'+
       notesSnippet+
       '</div>'+
-      '<div style="font-family:\'Cormorant Garamond\',serif;font-size:22px;font-weight:300;color:var(--accent-text);flex-shrink:0;padding-top:2px">'+(e.totalHold?ft(e.totalHold):'–')+'</div>'+
+      '<div style="font-family:\'Cormorant Garamond\',serif;font-size:22px;font-weight:300;color:var(--accent-text);flex-shrink:0;padding-top:2px">'+(e.totalHold?ft(e.totalHold):'â')+'</div>'+
       '</div></div>';
   }).join('');
 }
@@ -1163,13 +1183,13 @@ function openJrnEntry(id){
   });
 }
 
-// ═══ GESPEICHERTE TRACKS LADEN ═══
+// âââ GESPEICHERTE TRACKS LADEN âââ
 dbLoadAll(function(saved){if(!saved||!saved.length)return;saved.forEach(function(s){_addTrackFromBuf(s.id,s.n,s.d,s.data);});rMu();rTrackList();});
 
-// ═══ PWA SETUP ═══
+// âââ PWA SETUP âââ
 function pwaSetup(){
   var dark=isDark();
-  // Logo C: vertikale Dots — App-Icon
+  // Logo C: vertikale Dots â App-Icon
   var svgLogo='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">'+
     '<defs><radialGradient id="bg" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="'+(dark?'#1A3D1E':'#5E9062')+'"/><stop offset="100%" stop-color="'+(dark?'#0A1A0C':'#3A6B3E')+'"/></radialGradient></defs>'+
     '<rect width="512" height="512" rx="90" fill="url(#bg)"/>'+
@@ -1189,7 +1209,7 @@ function pwaSetup(){
 }
 pwaSetup();
 
-// ═══ BUBBLES ═══
+// âââ BUBBLES âââ
 (function(){
   var c=document.getElementById('bubbles');
   for(var i=0;i<8;i++){
