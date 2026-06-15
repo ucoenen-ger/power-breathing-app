@@ -184,6 +184,23 @@ textarea::placeholder{color:var(--text3);}
 /* Journal entry card hover */
 .jrn-entry{cursor:pointer;transition:opacity .15s}
 .jrn-entry:active{opacity:.75}
+.confirm-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;padding-bottom:max(20px,env(safe-area-inset-bottom));opacity:0;pointer-events:none;transition:opacity .2s}
+.confirm-overlay.vis{opacity:1;pointer-events:all}
+.confirm-sheet{background:var(--glass-hi);-webkit-backdrop-filter:blur(40px);backdrop-filter:blur(40px);border:1px solid var(--glass-border);border-radius:20px;padding:20px;width:100%;max-width:400px;margin:0 16px;box-shadow:var(--shadow-lg)}
+.confirm-sheet h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--text);margin-bottom:6px}
+.confirm-sheet p{font-size:13px;color:var(--text3);margin-bottom:18px}
+.confirm-sheet .confirm-btns{display:flex;gap:10px}
+.confirm-sheet .confirm-btns button{flex:1;padding:13px}
+@media print{
+  .screen{display:none!important}
+  #scrJrn{display:block!important;min-height:auto!important}
+  #jrnEditorView{display:none!important}
+  #jrnListView{display:block!important;overflow:visible!important}
+  .bbar,button,#jrnPdfBtn,.confirm-overlay{display:none!important}
+  .crd{break-inside:avoid;margin-bottom:.8em;background:white!important;border:1px solid #ccc!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important}
+  body{background:white!important;color:black!important}
+  :root{--text:#000;--text2:#333;--text3:#666;--accent-text:#2a5c2e;--accent:#2a5c2e;--sep:#ddd}
+}
 @keyframes breatheIco{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes floatBubble{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.03)}}
@@ -192,6 +209,16 @@ textarea::placeholder{color:var(--text3);}
 <body>
 <div class="bubbles" id="bubbles" style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0"></div>
 <div class="sbanner" id="banner"></div>
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-sheet">
+    <h3 id="confirmTitle">Eintrag löschen?</h3>
+    <p id="confirmMsg">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+    <div class="confirm-btns">
+      <button class="btn" onclick="confirmCancel()">Abbrechen</button>
+      <button class="btn" id="confirmOkBtn" style="color:rgba(220,60,60,.9);border-color:rgba(220,60,60,.25)" onclick="confirmOk()">Löschen</button>
+    </div>
+  </div>
+</div>
 <audio id="silentAudio" loop playsinline preload="auto" style="display:none"></audio>
 <audio id="musicAudio" loop playsinline preload="none" style="display:none"></audio>
 
@@ -453,7 +480,7 @@ textarea::placeholder{color:var(--text3);}
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
         <button class="btn btn-sm" onclick="go('wel')">← Zurück</button>
         <h2 class="serif" style="font-weight:300;font-size:22px;color:var(--text)">Journal</h2>
-        <div style="width:80px"></div>
+        <button class="btn btn-sm" id="jrnPdfBtn" onclick="exportJournalPDF()">📄 PDF</button>
       </div>
       <div id="jrnEntries"></div>
     </div>
@@ -570,6 +597,7 @@ function setupMediaSession(title){
   navigator.mediaSession.playbackState='playing';
 }
 var _retStartTime=0,_recovStartTime=0;
+window.addEventListener('pageshow',function(){Tone.start().catch(function(){});});
 document.addEventListener('visibilitychange',function(){
   if(document.hidden)return;
   Tone.start().catch(function(){});
@@ -674,7 +702,6 @@ async function playBreath(inh,ms){
 async function playChimeS(){
   await Tone.start();
   var rev=_revChime||new Tone.Reverb({decay:6,wet:0.72}).toDestination();
-  if(rev!==_revChime){await rev.generate();}
   var chime=new Tone.PolySynth(Tone.FMSynth,{harmonicity:6.2,modulationIndex:2.8,oscillator:{type:'sine'},modulation:{type:'sine'},envelope:{attack:0.004,decay:0.45,sustain:0.05,release:5.5},modulationEnvelope:{attack:0.004,decay:0.18,sustain:0,release:3.5},volume:-7}).connect(rev);
   var now=Tone.now();
   [[523.25,0],[659.26,0.22],[783.99,0.44],[1046.5,0.68],[1318.5,0.9]].forEach(function(p){chime.triggerAttackRelease(p[0],'1n',now+p[1]);});
@@ -684,7 +711,6 @@ async function playChimeS(){
 async function playGong(){
   await Tone.start();
   var rev=_revGong||new Tone.Reverb({decay:10,wet:0.78,preDelay:0.03}).toDestination();
-  if(rev!==_revGong){await rev.generate();}
   var ch=new Tone.Chorus(0.4,10,0.65).start().connect(rev);
   var gong=new Tone.PolySynth(Tone.FMSynth,{harmonicity:1.015,modulationIndex:1.6,oscillator:{type:'sine'},modulation:{type:'sine'},envelope:{attack:0.008,decay:0.8,sustain:0.65,release:10},modulationEnvelope:{attack:0.008,decay:0.4,sustain:0.25,release:8},volume:-5}).connect(ch);
   var rootHz=174.61,now=Tone.now();
@@ -1053,15 +1079,33 @@ function cancelJrnEntry(){
   _jrnCurrent=null;_jrnIsNew=false;showJrnList();
 }
 
+var _confirmCb=null;
+function showConfirm(title,msg,okLabel,cb){
+  document.getElementById('confirmTitle').textContent=title||'Bestätigen';
+  document.getElementById('confirmMsg').textContent=msg||'';
+  document.getElementById('confirmOkBtn').textContent=okLabel||'OK';
+  _confirmCb=cb;
+  document.getElementById('confirmOverlay').classList.add('vis');
+}
+function confirmOk(){
+  document.getElementById('confirmOverlay').classList.remove('vis');
+  if(_confirmCb){var f=_confirmCb;_confirmCb=null;f();}
+}
+function confirmCancel(){
+  document.getElementById('confirmOverlay').classList.remove('vis');
+  _confirmCb=null;
+}
+function exportJournalPDF(){window.print();}
 function deleteJrnEntry(){
   if(!_jrnCurrent)return;
-  var id=_jrnCurrent.id;
-  if(!confirm('Eintrag löschen?'))return;
-  openDB(function(db){
-    if(!db)return;
-    var tx=db.transaction('journal','readwrite');
-    tx.objectStore('journal').delete(id);
-    tx.oncomplete=function(){_jrnCurrent=null;_jrnIsNew=false;showJrnList();};
+  showConfirm('Eintrag löschen?','Diese Aktion kann nicht rückgängig gemacht werden.','Löschen',function(){
+    var id=_jrnCurrent.id;
+    openDB(function(db){
+      if(!db)return;
+      var tx=db.transaction('journal','readwrite');
+      tx.objectStore('journal').delete(id);
+      tx.oncomplete=function(){_jrnCurrent=null;_jrnIsNew=false;showJrnList();};
+    });
   });
 }
 
