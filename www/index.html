@@ -853,8 +853,34 @@ function startSes(){
 function abortSes(){
   _ab=true;cTO();stopM();
   if(speechSynthesis)speechSynthesis.cancel();
-  // Reset circle to neutral before showing summary
-  try{var ci=document.getElementById('sCirc'),gl=document.getElementById('sGlow');if(ci){ci.classList.remove('inhale','exhale');}if(gl){gl.classList.remove('inhale','exhale');}setCircle('breathing');try{document.getElementById('sArc').setAttribute('stroke-dashoffset','0');document.getElementById('sRing').style.display='none';}catch(e){}}catch(e){}
+  try{
+    var ci=document.getElementById('sCirc'),gl=document.getElementById('sGlow');
+    if(ci){
+      ci.style.transition='none';
+      ci.style.animation='none';
+      ci.classList.remove('inhale','exhale');
+      void ci.offsetWidth;
+      ci.style.width='140px';
+      ci.style.height='140px';
+      ci.style.animation='';
+      ci.style.transition='';
+    }
+    if(gl){
+      gl.style.transition='none';
+      gl.style.animation='none';
+      gl.classList.remove('inhale','exhale');
+      void gl.offsetWidth;
+      gl.style.width='180px';
+      gl.style.height='180px';
+      gl.style.animation='';
+      gl.style.transition='';
+    }
+    setCircle('breathing');
+    try{
+      document.getElementById('sArc').setAttribute('stroke-dashoffset','0');
+      document.getElementById('sRing').style.display='none';
+    }catch(e){}
+  }catch(e){}
   showCmp(true);
 }
 function rDots(){
