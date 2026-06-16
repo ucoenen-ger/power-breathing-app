@@ -217,13 +217,7 @@ textarea::placeholder{color:var(--text3);}
 .day-btn input{display:none;}
 .day-btn span{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);font-size:12px;color:var(--text3);transition:background .2s,color .2s;}
 .day-btn input:checked+span{background:var(--accent);color:#fff;}
-#calGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
-.cal-cell{border-radius:3px;background:rgba(255,255,255,.07);aspect-ratio:1;}
-.cal-cell.done{background:var(--accent);}
-.cal-cell.today{background:#52b788;box-shadow:0 0 6px rgba(82,183,136,.4);}
-.cal-cell.future,.cal-cell.empty{background:transparent;}
-#reminderConfig input[type="time"]{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:var(--text1);padding:4px 8px;font-size:14px;}
-</style>
+#reminderConfig input[type="time"]{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:var(--text1);padding:4px 8px;font-size:14px;}</style>
 </head>
 <body>
 <div class="bubbles" id="bubbles" style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0"></div>
@@ -384,41 +378,28 @@ textarea::placeholder{color:var(--text3);}
           <label class="ios-tog"><input type="checkbox" id="voiceOnChk" onchange="C.voiceOn=this.checked;saveC()"><span class="ios-tog-track"></span></label>
         </div>
       </div>
-            <div class="crd">
-        <div class="lbl" style="margin-bottom:12px">AKTIVITÄT</div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-          <div style="display:flex;align-items:baseline;gap:6px">
-            <span id="calStreakCount" style="font-size:32px;font-weight:600;color:var(--text1)">0</span>
-            <span style="font-size:13px;color:var(--text3)">Tage Serie 🔥</span>
+                  <div class="crd">
+        <div class="lbl" style="margin-bottom:14px">AKTIVITÄT</div>
+        <div style="display:flex;align-items:stretch">
+          <div style="flex:1;text-align:center;padding:4px 0">
+            <div style="font-size:34px;line-height:1;font-weight:700;color:var(--text1)"><span id="calStreakCount">0</span> 🔥</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:6px">Tage Serie</div>
           </div>
-          <div style="text-align:right">
-            <div style="font-size:11px;color:var(--text3)">Längste Serie</div>
-            <div style="font-size:18px;font-weight:500;color:var(--accent)"><span id="calBestStreak">0</span></div>
+          <div style="width:1px;background:var(--sep);margin:4px 0"></div>
+          <div style="flex:1;text-align:center;padding:4px 0">
+            <div style="font-size:34px;line-height:1;font-weight:700;color:var(--accent)"><span id="calBestStreak">0</span> 🏆</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:6px">Längste Serie</div>
           </div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:5px">
-          <div style="font-size:9px;color:var(--text3);text-align:center">Mo</div>
-          <div style="font-size:9px;color:var(--text3);text-align:center">Di</div>
-          <div style="font-size:9px;color:var(--text3);text-align:center">Mi</div>
-          <div style="font-size:9px;color:var(--text3);text-align:center">Do</div>
-          <div style="font-size:9px;color:var(--text3);text-align:center">Fr</div>
-          <div style="font-size:9px;color:var(--text3);text-align:center">Sa</div>
-          <div style="font-size:9px;color:var(--text3);text-align:center">So</div>
-        </div>
-        <div id="calGrid"></div>
-        <div style="display:flex;gap:16px;margin-top:10px;justify-content:center">
-          <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:2px;background:var(--accent)"></div><span style="font-size:10px;color:var(--text3)">Trainiert</span></div>
-          <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:2px;background:rgba(255,255,255,.07)"></div><span style="font-size:10px;color:var(--text3)">Kein Training</span></div>
         </div>
       </div>
       <div class="crd">
         <div class="lbl" style="margin-bottom:8px">ERINNERUNG</div>
-        <div class="row">
+        <div class="set-row">
           <span>Tägliche Erinnerung</span>
           <label class="ios-tog"><input type="checkbox" id="reminderOnChk" onchange="toggleReminder(this.checked)"><span class="ios-tog-track"></span></label>
         </div>
         <div id="reminderConfig" style="display:none;margin-top:12px">
-          <div class="row" style="margin-bottom:12px">
+          <div class="set-row" style="margin-bottom:12px">
             <span>Uhrzeit</span>
             <input type="time" id="reminderTime" value="08:00" onchange="saveReminder()">
           </div>
@@ -712,33 +693,9 @@ function _getBestStreak(){
   function _updStreakUI(){
     try{
       var cnt=_getStreak();
-      var days=JSON.parse(localStorage.getItem('_streakDays')||'[]');
-      // Legacy streak bar (may be removed)
       var el=document.getElementById('streakCount');if(el)el.textContent=cnt;
-      // Calendar view counts
       var cel=document.getElementById('calStreakCount');if(cel)cel.textContent=cnt;
       var bel=document.getElementById('calBestStreak');if(bel)bel.textContent=_getBestStreak();
-      // Build 5-week calendar grid (Mon-Sun columns)
-      var grid=document.getElementById('calGrid');
-      if(grid){
-        var today=new Date();today.setHours(0,0,0,0);
-        var dow=today.getDay();
-        var mondayOffset=(dow===0)?6:dow-1;
-        var startDay=new Date(today);
-        startDay.setDate(today.getDate()-mondayOffset-28);
-        var cells='';
-        for(var i=0;i<35;i++){
-          var d=new Date(startDay);d.setDate(startDay.getDate()+i);
-          d.setHours(0,0,0,0);
-          var key=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
-          var cls='cal-cell';
-          if(d.getTime()===today.getTime())cls+=' today';
-          else if(d.getTime()>today.getTime())cls+=' future';
-          else if(days.indexOf(key)>=0)cls+=' done';
-          cells+='<div class="'+cls+'"></div>';
-        }
-        grid.innerHTML=cells;
-      }
     }catch(e){}
   }
   function toggleReminder(on){
