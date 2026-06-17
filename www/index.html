@@ -472,9 +472,9 @@ textarea::placeholder{color:var(--text3);}
     <span class="mix-val" id="mixVal">55%</span>
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
-    <span style="font-size:15px;opacity:.4">🫁</span>
+    <span style="font-size:15px;opacity:.4">🔈</span>
     <input type="range" id="mixSlider" min="0" max="100" value="50" step="1" oninput="_applyMix(parseInt(this.value))">
-    <span style="font-size:15px;opacity:.4">🎵</span>
+    <span style="font-size:15px;opacity:.4">🔊</span>
   </div>
 </div>
 </div>
@@ -834,6 +834,7 @@ function ac(){
 }
 async function playBreath(inh,ms){
   try{
+    var _breathGain=0.5;
     await Tone.start();
     var c=Tone.getContext().rawContext;
     var now=c.currentTime,dur=ms/1000,sr=c.sampleRate;
@@ -843,8 +844,8 @@ async function playBreath(inh,ms){
     bp.type='bandpass';bp.Q.value=.4;
     if(inh){bp.frequency.setValueAtTime(250,now);bp.frequency.linearRampToValueAtTime(550,now+dur);}
     else{bp.frequency.setValueAtTime(450,now);bp.frequency.linearRampToValueAtTime(180,now+dur);}
-    if(inh){g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(1.1,now+dur*.25);g.gain.linearRampToValueAtTime(.85,now+dur*.7);g.gain.linearRampToValueAtTime(0,now+dur*.95);}
-    else{g.gain.setValueAtTime(.95,now);g.gain.linearRampToValueAtTime(.60,now+dur*.3);g.gain.linearRampToValueAtTime(0,now+dur*.95);}
+    if(inh){g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(1.1*_breathGain,now+dur*.25);g.gain.linearRampToValueAtTime(.85*_breathGain,now+dur*.7);g.gain.linearRampToValueAtTime(0,now+dur*.95);}
+    else{g.gain.setValueAtTime(.95*_breathGain,now);g.gain.linearRampToValueAtTime(.60*_breathGain,now+dur*.3);g.gain.linearRampToValueAtTime(0,now+dur*.95);}
     src.buffer=buf;src.connect(bp);bp.connect(g);g.connect(c.destination);src.start(now);src.stop(now+dur);
   }catch(e){}
 }
