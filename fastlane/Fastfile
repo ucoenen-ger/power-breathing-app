@@ -38,7 +38,7 @@ platform :ios do
     )
 
     increment_version_number(
-      version_number: "1.2.0",
+      version_number: "1.2.1",
       xcodeproj: "ios/App/App.xcodeproj"
     )
 
