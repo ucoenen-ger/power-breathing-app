@@ -7,6 +7,10 @@ platform :ios do
     issuer_id = ENV["APP_STORE_CONNECT_API_ISSUER_ID"]
     key_content = ENV["APP_STORE_CONNECT_API_KEY_CONTENT"]
 
+    UI.message "Key ID present: #{!key_id.nil? && !key_id.empty?}"
+    UI.message "Issuer ID present: #{!issuer_id.nil? && !issuer_id.empty?}"
+    UI.message "Key content length: #{key_content&.length || 0}"
+
     key_dir = File.expand_path("~/.appstoreconnect/private_keys")
     sh("mkdir -p #{key_dir}")
     key_path = File.join(key_dir, "AuthKey_#{key_id}.p8")
@@ -17,6 +21,8 @@ platform :ios do
       issuer_id: issuer_id,
       key_filepath: key_path
     )
+
+    UI.message "API key object created, fetching provisioning profile..."
 
     get_provisioning_profile(
       api_key: api_key,
