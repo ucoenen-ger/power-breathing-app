@@ -12,9 +12,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # NEUER SCHRITT: Zwingt den Runner, Xcode 26 (oder neuer) zu nutzen
+      # Waehlt automatisch die neueste installierte Xcode-26.x-Version.
+      # Feste Pfade wie Xcode_26.0.app brechen, sobald das Runner-Image auf
+      # z.B. 26.0.1 aktualisiert wird (iOS-Plattform dann nur dort installiert).
       - name: Select latest Xcode
-        run: sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer
+        run: |
+          XC=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -n1)
+          if [ -z "$XC" ]; then XC=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -n1); fi
+          if [ -z "$XC" ]; then XC=/Applications/Xcode.app; fi
+          echo "Selected Xcode: $XC"
+          sudo xcode-select -s "$XC/Contents/Developer"
+          xcodebuild -version
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
