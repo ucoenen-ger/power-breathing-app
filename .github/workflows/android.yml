@@ -1,0 +1,109 @@
+name: Android Build (Google Play)
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Versionsname (wie iOS)'
+        required: true
+        default: '1.2.3'
+      upload_to_play:
+        description: 'Automatisch in Google Play hochladen (erst nach dem ersten manuellen Upload moeglich)'
+        type: boolean
+        default: false
+      track:
+        description: 'Play-Track'
+        type: choice
+        options: [internal, alpha, beta, production]
+        default: internal
+      status:
+        description: 'Release-Status (draft, solange die App noch nie veroeffentlicht wurde)'
+        type: choice
+        options: [draft, completed]
+        default: draft
+  # Testlauf ohne Signatur bei Aenderungen am Android-Branch
+  push:
+    branches: [android]
+    paths: ['android/**', 'www/**', '.github/workflows/android.yml']
+
+env:
+  VERSION_NAME: ${{ github.event.inputs.version_name || '1.2.3' }}
+
+jobs:
+  build:
+    # ubuntu-24.04 hat das Android SDK vorinstalliert
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install Node dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Capacitor sync
+        run: npx cap sync android
+
+      - name: Keystore aus Secret erzeugen
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              echo "::error::Secret ANDROID_KEYSTORE_BASE64 fehlt"; exit 1
+            fi
+            echo "::warning::Kein Keystore, baue unsignierte Debug-Version"
+            echo "SIGNED=false" >> "$GITHUB_ENV"; exit 0
+          fi
+          echo "SIGNED=true" >> "$GITHUB_ENV"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload-keystore.jks"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/upload-keystore.jks" >> "$GITHUB_ENV"
+
+      - name: Build AAB und APK
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          if [ "$SIGNED" = "true" ]; then TASKS="bundleRelease assembleRelease"; else TASKS="assembleDebug"; fi
+          ./gradlew --no-daemon $TASKS \
+            -PversionCode=${{ github.run_number }} \
+            -PversionName=$VERSION_NAME
+
+      - name: Artefakte umbenennen
+        run: |
+          mkdir -p dist
+          V=$VERSION_NAME-${{ github.run_number }}
+          if [ "$SIGNED" = "true" ]; then
+            cp android/app/build/outputs/bundle/release/app-release.aab dist/atemprotokoll-$V.aab
+            cp android/app/build/outputs/apk/release/app-release.apk dist/atemprotokoll-$V.apk
+          else
+            cp android/app/build/outputs/apk/debug/app-debug.apk dist/atemprotokoll-$V-debug.apk
+          fi
+
+      - name: Artefakte hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: atemprotokoll-android-${{ env.VERSION_NAME }}-${{ github.run_number }}
+          path: dist/
+
+      - name: Upload zu Google Play
+        if: ${{ github.event.inputs.upload_to_play == 'true' && env.SIGNED == 'true' }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: de.coenen.atemprotokoll
+          releaseFiles: dist/*.aab
+          track: ${{ github.event.inputs.track }}
+          status: ${{ github.event.inputs.status }}
