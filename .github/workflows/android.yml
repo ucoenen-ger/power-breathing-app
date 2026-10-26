@@ -68,18 +68,43 @@ jobs:
           echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload-keystore.jks"
           echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/upload-keystore.jks" >> "$GITHUB_ENV"
 
+      - name: Keystore pruefen
+        if: env.SIGNED == 'true'
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          echo "Keystore-Groesse: $(stat -c %s "$ANDROID_KEYSTORE_PATH") Bytes (erwartet 4360)"
+          if ! OUT=$(keytool -list -keystore "$ANDROID_KEYSTORE_PATH" -storepass "$ANDROID_KEYSTORE_PASSWORD" 2>&1); then
+            echo "::error::Keystore laesst sich nicht oeffnen: $(echo "$OUT" | grep -i keytool | head -1). ANDROID_KEYSTORE_BASE64 oder ANDROID_KEYSTORE_PASSWORD pruefen."; exit 1
+          fi
+          if ! echo "$OUT" | grep -q "^$ANDROID_KEY_ALIAS,"; then
+            echo "::error::Alias '$ANDROID_KEY_ALIAS' nicht im Keystore. ANDROID_KEY_ALIAS muss 'upload' sein."; exit 1
+          fi
+          echo "Keystore ok"
+
       - name: Build AAB und APK
         working-directory: android
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          # PKCS12: Schluessel-Passwort = Keystore-Passwort
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           chmod +x gradlew
-          if [ "$SIGNED" = "true" ]; then TASKS="bundleRelease assembleRelease"; else TASKS="assembleDebug"; fi
+          # Ohne Keystore: Debug-APK plus unsigniertes Release-Bundle (prueft den Release-Build)
+          if [ "$SIGNED" = "true" ]; then TASKS="bundleRelease assembleRelease"; else TASKS="assembleDebug bundleRelease"; fi
+          set +e
           ./gradlew --no-daemon $TASKS \
             -PversionCode=${{ github.run_number }} \
-            -PversionName=$VERSION_NAME
+            -PversionName=$VERSION_NAME 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+          RC=${PIPESTATUS[0]}
+          if [ $RC -ne 0 ]; then
+            # Fehlerursache als Annotation ausgeben, damit sie ohne Log-Download sichtbar ist
+            awk '/What went wrong/{f=1} /\* Try:/{f=0} f' "$RUNNER_TEMP/gradle.log" | head -40 | tr '\n' ' ' | sed 's/^/::error title=Gradle::/' ; echo
+            grep -E "^e: |error:|ERROR:" "$RUNNER_TEMP/gradle.log" | head -10 | sed 's/^/::error title=Detail::/'
+            exit $RC
+          fi
 
       - name: Artefakte umbenennen
         run: |
