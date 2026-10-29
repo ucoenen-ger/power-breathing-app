@@ -825,11 +825,57 @@ async function _pregenRevs(){
     
   }catch(e){console.warn('_pregenRevs failed',e);}
 }
+// ═══ MUSIK ═══
+// iOS (WKWebView/Safari) ignoriert audio.volume: der Wert bleibt immer 1.
+// Dort spielt die Musik deshalb ueber Web Audio (dekodierter Puffer -> Fade-Gain -> Master-Gain)
+// in einem eigenen AudioContext. Kein createMediaElementSource (verursachte frueher Knistern)
+// und keine Last durch die Freeverbs im Tone-Context. Android/Browser nutzen weiter audio.volume.
+var _volOK=(function(){try{var a=document.createElement('audio');a.volume=0.5;return Math.abs(a.volume-0.5)<0.01;}catch(e){return true;}})();
+var _mctx=null,_mmaster=null,_mcur=null,_mbuf={},_mbufKeys=[],_mTok=0;
+var _M_MAX_BYTES=10*1024*1024; // groessere Uploads ohne Web Audio abspielen (Speicher)
+function _mCtx(){
+  if(_volOK)return null;
+  try{
+    if(!_mctx){
+      var AC=window.AudioContext||window.webkitAudioContext;
+      _mctx=new AC();
+      _mmaster=_mctx.createGain();
+      _mmaster.gain.value=typeof C.musVol==='number'?C.musVol:0.55;
+      _mmaster.connect(_mctx.destination);
+    }
+    if(_mctx.state!=='running'){_mctx.resume().catch(function(){});}
+  }catch(e){_mctx=null;}
+  return _mctx;
+}
+function _mLoad(url){
+  if(_mbuf[url])return _mbuf[url];
+  var p=fetch(url).then(function(r){return r.arrayBuffer();}).then(function(ab){
+    if(ab.byteLength>_M_MAX_BYTES)throw new Error('zu gross');
+    return new Promise(function(res,rej){_mCtx().decodeAudioData(ab,res,rej);});
+  });
+  _mbuf[url]=p;_mbufKeys.push(url);
+  p.catch(function(){if(_mbuf[url]===p){delete _mbuf[url];var i=_mbufKeys.indexOf(url);if(i>=0)_mbufKeys.splice(i,1);}});
+  while(_mbufKeys.length>2){delete _mbuf[_mbufKeys.shift()];}
+  return p;
+}
+function _mPreload(trk){try{if(!_mCtx()||!trk)return;var url=trk.mp3||trk.src;if(url)_mLoad(url).catch(function(){});}catch(e){}}
+function _mFadeOut(cur,sec){
+  if(!cur)return;
+  try{var t=_mctx.currentTime,g=cur.g.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(0,t+sec);cur.s.stop(t+sec+0.05);}catch(e){try{cur.s.stop();}catch(e2){}}
+}
+function _mStopNow(){_mTok++;if(_mcur){_mFadeOut(_mcur,0.03);_mcur=null;}}
+function _mElPlay(el,url,tgt){
+  if(el.src!==url){el.src=url;}
+  el.loop=true;el.volume=0;
+  el.play().catch(function(e){console.warn('MP3:',e);});
+  _fadeElVol(el,tgt,3500);
+}
 function setMVol(v){
   v=Math.max(0,Math.min(1,v));
   C.musVol=v;
   _mixBal=Math.round(v*100);
   try{localStorage.setItem('_mixBal',''+_mixBal);}catch(e){}
+  try{if(_mmaster&&_mctx){var t=_mctx.currentTime;_mmaster.gain.cancelScheduledValues(t);_mmaster.gain.setTargetAtTime(v,t,0.04);}}catch(e){}
   try{
     var el=_getMEl();
     if(el){
@@ -851,29 +897,50 @@ function setMVol(v){
   }catch(e){}
 }function stopM(){
   if(_wFadeTO){clearTimeout(_wFadeTO);_wFadeTO=null;}
+  _mTok++;
+  if(_mcur){_mFadeOut(_mcur,1.8);_mcur=null;}
   var el=_getMEl();if(!el||el.paused)return;
-  try{var c=_getWAC(),g=_getGain();g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(0,c.currentTime+1.8);_wFadeTO=setTimeout(function(){el.pause();try{_getGain().gain.setValueAtTime(0,_getWAC().currentTime);}catch(e){}},1900);}
-  catch(e){el.pause();}
+  _fadeElVol(el,0,1800);
+  _wFadeTO=setTimeout(function(){el.pause();},1900);
 }
 function playM(trk){
   if(_wFadeTO){clearTimeout(_wFadeTO);_wFadeTO=null;}
   var el=_getMEl(); if(!el)return;
   if(!trk||trk.type==='none'){stopM(); return;}
   var url=trk.mp3||trk.src; if(!url)return;
-  try{
-    var tgt = typeof C.musVol==='number'?Math.max(0,Math.min(1,C.musVol)):0.55;
-    el.volume=0;
-    if(el.src!==url){el.src=url;}
-    el.loop=true;
-    el.play().catch(function(e){console.warn('MP3:',e);});
-    _fadeElVol(el,tgt,3500);
-  }catch(e){
+  var tgt = typeof C.musVol==='number'?Math.max(0,Math.min(1,C.musVol)):0.55;
+  var c=_mCtx();
+  if(c){
+    // iOS: Web Audio
+    var tok=++_mTok;
+    if(_mcur){_mFadeOut(_mcur,0.3);_mcur=null;}
+    try{if(!el.paused)el.pause();}catch(e){}
+    _mLoad(url).then(function(buf){
+      if(tok!==_mTok)return;
+      var s=c.createBufferSource(),g=c.createGain();
+      s.buffer=buf;s.loop=true;s.connect(g);g.connect(_mmaster);
+      var t=c.currentTime;
+      _mmaster.gain.cancelScheduledValues(t);_mmaster.gain.setValueAtTime(typeof C.musVol==='number'?C.musVol:tgt,t);
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(1,t+3.5);
+      s.start(t);
+      _mcur={s:s,g:g};
+    }).catch(function(e){
+      // Fallback (z. B. sehr grosse Datei): normales Audio-Element, dann ohne Lautstaerkeregelung auf iOS
+      if(tok!==_mTok)return;
+      console.warn('Musik ueber Audio-Element:',e);
+      try{_mElPlay(el,url,tgt);}catch(e2){}
+    });
+    return;
+  }
+  try{_mElPlay(el,url,tgt);}
+  catch(e){
     if(el.src!==url)el.src=url;
     el.loop=true;
     try{el.volume=C.musVol||0.55;}catch(ve){}
     el.play().catch(function(e2){console.warn('MP3 fallback:',e2);});
   }
 }
+document.addEventListener('visibilitychange',function(){if(!document.hidden&&_mctx&&_mctx.state!=='running'){try{_mctx.resume().catch(function(){});}catch(e){}}});
 var _randHistory=[];
 function pickRandTrk(){var pool=TRK.filter(function(t){return t.type==='mp3'||t.type==='preinstalled';});if(!pool.length)return getTrk(0);var unplayed=pool.filter(function(t){return _randHistory.indexOf(t.id)<0;});if(!unplayed.length){_randHistory=[];unplayed=pool.slice();}var pick=unplayed[Math.floor(Math.random()*unplayed.length)];_randHistory.push(pick.id);return pick;}
 function fadeTransM(nextTrk){stopM();setTimeout(function(){if(!_ab)playM(nextTrk);},2000);}
@@ -1057,12 +1124,15 @@ function cCol(phase){
   }
 }
 function startSes(){
+  _mCtx(); // im Klick erzeugen/entsperren (iOS)
+  if(!C.musRandom){_mPreload(getTrk(C.mus1));_mPreload(getTrk(C.mus2));}
   function _doStart(){
     try{Tone.getContext().rawContext.resume();}catch(e){}
     _pregenRevs();
     // Reset audio state to avoid glitches on restart
     if(_wFadeTO){clearTimeout(_wFadeTO);_wFadeTO=null;}
     try{var _el=_getMEl();if(_el){_el.pause();_el.currentTime=0;}}catch(e){}
+    _mStopNow();
     try{if(_wgain&&_wac){_wgain.gain.cancelScheduledValues(_wac.currentTime);_wgain.gain.setValueAtTime(0,_wac.currentTime);}}catch(e){}
     _ab=false;stopM();stopPrev();S={round:0,phase:'idle',retResults:[],retEl:0};
     window._startSilentAudio();requestWakeLock();setupMediaSession();go('ses');rDots();
