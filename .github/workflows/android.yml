@@ -5,7 +5,7 @@ on:
       version_name:
         description: 'Versionsname (wie iOS)'
         required: true
-        default: '1.2.3'
+        default: '1.2.4'
       upload_to_play:
         description: 'Automatisch in Google Play hochladen (erst nach dem ersten manuellen Upload moeglich)'
         type: boolean
@@ -26,7 +26,7 @@ on:
     paths: ['android/**', 'www/**', '.github/workflows/android.yml']
 
 env:
-  VERSION_NAME: ${{ github.event.inputs.version_name || '1.2.3' }}
+  VERSION_NAME: ${{ github.event.inputs.version_name || '1.2.4' }}
 
 jobs:
   build:
